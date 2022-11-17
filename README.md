@@ -14,7 +14,7 @@ Supports MSEdgeDriver for Microsoft Edge `msedgedriver.exe`
 
 Supports GeckoDrive for Mozilla Firefox `geckodriver.exe`
 
-Supports Chromedriver for Google Chrome `chromedriver.exe
+Supports Chromedriver for Google Chrome `chromedriver.exe`
 
 Full driver support!
 
