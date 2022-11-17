@@ -8,15 +8,21 @@ all you need is the batch script it will download the latest versions from their
 
 Portable Selenium for Windows! One file thats it! move to any folder you like!
 
-Supports IEDriverServer for internet explorer
+Supports IEDriverServer for internet explorer `iedriverserver.exe`
 
-Supports MSEdgeDriver for Microsoft Edge
+Supports MSEdgeDriver for Microsoft Edge `msedgedriver.exe`
 
-Supports GeckoDrive for Mozilla Firefox
+Supports GeckoDrive for Mozilla Firefox `geckodriver.exe`
 
-Supports Chromedriver for Google Chrome
+Supports Chromedriver for Google Chrome `chromedriver.exe
+
+Full driver support!
 
 Allows you to enable headless so the automated browser tasks are hidden so you can game or work watch videos
+
+Background tasks
+
+Foreground tasks
 
 Interval looped selenium browser tasks every X amount of seconds (60 seconds i set as default you can change it)
 
