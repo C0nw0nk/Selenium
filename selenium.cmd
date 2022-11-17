@@ -70,7 +70,7 @@ set headlessbrowser=0
 ::default is not to cleanup because its most likely we will run our automated task again
 :: 1 enabled
 :: 0 disabled
-set cleanup=1
+set cleanup=0
 
 ::instead of just closing the window after our automated web tasking we pause to view and check once your happy you can set this to 0
 :: 1 enabled
@@ -139,16 +139,19 @@ if /I %debug% == 1 echo Set-PSDebug -Trace 1;
 echo $workingpath = '%root_path%';
 echo Import-Module '%root_path%WebDriver.dll';
 echo $ieOptions = New-Object OpenQA.Selenium.IE.InternetExplorerOptions;
+echo $ieOptions.addArgument^("--inprivate"^);
 echo $ieOptions.IntroduceInstabilityByIgnoringProtectedModeSettings = $true;
 echo $ieOptions.IgnoreZoomLevel = $true;
 echo $ieOptions.EnsureCleanSession = $true;
 echo $ieOptions.PageLoadStrategy = 'Normal';
-echo $ieOptions.EdgeExecutablePath = 'C:\Program Files ^(x86^)\Microsoft\Edge\Application\msedge.exe';
 echo $ieOptions.useCreateProcessApiToLaunchIe^(^);
-echo $ieOptions.addCommandSwitches^("--ie-mode-test"^);
+echo $ieOptions.addArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.IE.InternetExplorerDriver^($workingpath,$ieOptions^);
 echo $Options.Url^('%internetexplorer_selenium_browser_url%'^);
 echo $Options.Navigate^(^).GoToURL^('%internetexplorer_selenium_browser_url%'^);
+echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]/span[1]'^)^);
+echo $pageData.Click^(^);
+echo $pageData.Url^(^); #this will navigate browser to the clicked element
 echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="header-content"]/nav/div[1]/div/div[2]/ul[2]/li[2]/a'^)^);
 echo $pageData.Click^(^);
 echo $pageData.Url^(^); #this will navigate browser to the clicked element
@@ -171,12 +174,19 @@ if /I %debug% == 1 echo Set-PSDebug -Trace 1;
 echo $workingpath = '%root_path%';
 echo Import-Module '%root_path%WebDriver.dll';
 echo $edgeOptions = New-Object OpenQA.Selenium.Edge.EdgeOptions;
-if /I %headlessbrowser% == 1 echo $edgeOptions.AddArgument^('--headless'^);$edgeOptions.AddArgument^(^);
+if /I %headlessbrowser% == 1 echo $edgeOptions.AddArgument^('--headless'^);
+echo $edgeOptions.addArgument^("start-maximized"^);
+echo $edgeOptions.addArgument^("-inprivate"^);
+echo $edgeOptions.EnsureCleanSession = $true;
 echo $edgeOptions.PageLoadStrategy = 'Normal';
+echo $edgeOptions.LeaveBrowserRunning = $True;
 echo $edgeOptions.AcceptInsecureCertificates = $True;
+echo $edgeOptions.AddArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.Edge.EdgeDriver^($workingpath,$edgeOptions^);
 echo $Options.Navigate^(^).GoToURL^('%microsoftedge_selenium_browser_url%'^);
-echo Start-Sleep -s 2;
+echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]/span[1]'^)^);
+echo $pageData.Click^(^);
+echo $pageData.Url^(^); #this will navigate browser to the clicked element
 echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="header-content"]/nav/div[1]/div/div[2]/ul[2]/li[2]/a'^)^);
 echo $pageData.Click^(^);
 echo $pageData.Url^(^); #this will navigate browser to the clicked element
@@ -198,21 +208,26 @@ if /I %debug% == 1 echo Set-PSDebug -Trace 1;
 echo $workingpath = '%root_path%';
 echo Import-Module '%root_path%WebDriver.dll';
 echo $chromeOptions = New-Object OpenQA.Selenium.Chrome.ChromeOptions;
-if /I %headlessbrowser% == 1 echo $chromeOptions.AddArgument^('--headless'^);$chromeOptions.AddArgument^(^);
+if /I %headlessbrowser% == 1 echo $chromeOptions.AddArgument^('--headless'^);
 echo $chromeOptions.addArgument^("start-maximized"^);
-echo $chromeOptions.addArgument^("homepage='https://www.google.co.uk/'"^);
-echo $chromeOptions.addExcludedArgument^("enable-logging"^);
-echo $chromeOptions.addExcludedArgument^("enable-automation"^);
+echo $chromeOptions.addArgument^("--incognito"^);
+echo $chromeOptions.EnsureCleanSession = $true;
+echo $chromeOptions.PageLoadStrategy = 'Normal';
 echo $chromeOptions.LeaveBrowserRunning = $True;
 echo $chromeOptions.AcceptInsecureCertificates = $true;
+echo $chromeOptions.AddArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.Chrome.ChromeDriver^($workingpath,$chromeOptions^);
 echo $Options.Navigate^(^).GoToURL^('%chrome_selenium_browser_url%'^);
+echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]/span[1]'^)^);
+echo $pageData.Click^(^);
+echo $pageData.Url^(^); #this will navigate browser to the clicked element
 echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="header-content"]/nav/div[1]/div/div[2]/ul[2]/li[2]/a'^)^);
 echo $pageData.Click^(^);
 echo $pageData.Url^(^); #this will navigate browser to the clicked element
 echo Start-Sleep -s 2;
 echo $pageTitle = $Options.FindElement^([OpenQA.Selenium.By]::tagname^('title'^)^).getAttribute^('innerHTML'^);
 echo Write-Output $pageTitle;
+if /I %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path%%~n0-chrome-temp.ps1"
 ::end powershell code
 powershell -ExecutionPolicy Unrestricted -File %root_path%%~n0-chrome-temp.ps1 %*
@@ -227,10 +242,20 @@ if /I %debug% == 1 echo Set-PSDebug -Trace 1;
 echo $workingpath = '%root_path%';
 echo Import-Module '%root_path%WebDriver.dll';
 echo $firefoxoptions = New-Object OpenQA.Selenium.Firefox.FirefoxOptions;
-if /I %headlessbrowser% == 1 echo $firefoxoptions.AddArgument^('--headless'^);$firefoxoptions.AddArgument^(^);
+if /I %headlessbrowser% == 1 echo $firefoxoptions.AddArgument^('--headless'^);
+echo $firefoxoptions.AddArgument^("--kiosk"^);
+echo $firefoxoptions.AddArgument^("--private-window"^);
+echo $firefoxoptions.EnsureCleanSession = $true;
+echo $firefoxoptions.PageLoadStrategy = 'Normal';
+echo $firefoxoptions.LeaveBrowserRunning = $True;
+echo $firefoxoptions.AcceptInsecureCertificates = $true;
+echo $firefoxoptions.AddArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.Firefox.FirefoxDriver^($workingpath,$firefoxoptions^);
 echo $Options.Url^('%firefox_selenium_browser_url%'^);
 echo $Options.Navigate^(^).GoToURL^('%firefox_selenium_browser_url%'^);
+echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]/span[1]'^)^);
+echo $pageData.Click^(^);
+echo $pageData.Url^(^); #this will navigate browser to the clicked element
 echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="header-content"]/nav/div[1]/div/div[2]/ul[2]/li[2]/a'^)^);
 echo $pageData.Click^(^);
 echo $pageData.Url^(^); #this will navigate browser to the clicked element
