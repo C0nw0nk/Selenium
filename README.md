@@ -40,6 +40,17 @@ https://github.com/C0nw0nk/Selenium/pulls
 
 Because nobody has bothered to make a phantomjs or selenium portable and easy soloution for windows they are all requiring you to setup python and pip and have way to many dependencies this has NONE!
 
+# How do i find XPath to use inside the script ?
+
+Open developer tools in your browser normally
+
+#### Keyboard: `Ctrl + Shift + I`
+#### Internet Explorer and Edge: `F12`
+#### macOS: `⌘ + ⌥ + I`
+
+The right click a element you want to click modify alter output use what not and `COPY` then `XPath` Thats it!
+
+
 # Requirments NONE!
 
 NONE! YES NONE! YOU DO NOT NEED TO ANYTHING JUST RUN THE `.cmd` batch file script and enjoy.
