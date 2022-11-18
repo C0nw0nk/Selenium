@@ -1,6 +1,6 @@
 # Selenium
 
-Batch file selenium fast portable not dependancies i have built it to be very automated for tasks
+Batch file selenium fast portable no dependencies or requirments i have built it to be very automated for tasks
 Automatically sets up selenium and webdriver for use to be portable to any folder on your pc no python required pip any of that nonsense needed
 all you need is the batch script it will download the latest versions from their github pages portable selenium!
 
