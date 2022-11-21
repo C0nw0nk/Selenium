@@ -16,6 +16,10 @@ Supports GeckoDrive for Mozilla Firefox `geckodriver.exe`
 
 Supports Chromedriver for Google Chrome `chromedriver.exe`
 
+Supports Operadriver for Opera `operadriver.exe`
+
+Supports PhantomJS for PhantomJS `phantomjs.exe`
+
 Full driver support!
 
 Allows you to enable headless so the automated browser tasks are hidden so you can game or work watch videos
@@ -25,6 +29,26 @@ Background tasks
 Foreground tasks
 
 Interval looped selenium browser tasks every X amount of seconds (60 seconds i set as default you can change it)
+
+Multiple browsers,
+
+Firefox web browser
+
+Chrome Chrome web browser
+
+Opera web Browser
+
+Brave web Browser
+
+Tor web Browser
+
+Vivaldi web Browser
+
+Microsoft Edge web Browser
+
+Internet explorer web browser
+
+PhantomJS phantom javascript web browser
 
 # Information
 
