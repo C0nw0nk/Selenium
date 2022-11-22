@@ -129,10 +129,9 @@ set debug=0
 
 ::external selenium script
 ::this will allow you to modify the selenium script externally if you do not want to do it inside this batch file
-::example inside the directory with this batch file you will see a file left every run called chrome-temp.ps1 or firefox-temp.ps1 modify this for your needs
+::example inside the directory with this batch file you will see a file left every run called chrome.ps1 or firefox.ps1 modify this for your needs
 ::it wont be deleted and each run time of this batch file it will use this file instead of the inline code in this batch file
 :: means you do not need to edit the batch file you can focus on your selenium script modifications without needing to escape batch code
-::TODO COMPLETE THIS
 :: 1 enabled
 :: 0 disabled
 set custom_selenium_script=0
@@ -190,6 +189,11 @@ if %internetexplorer_selenium% == 0 goto :skipie
 set global_name=ie
 set global_drver_type=IE
 set global_drver_type_name=InternetExplorer
+if %custom_selenium_script% == 0 goto :start_ie
+if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_ie
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+goto :skipie
+:start_ie
 ::start powershell code
 (
 if %debug% == 1 echo Set-PSDebug -Trace 1;
@@ -237,13 +241,18 @@ if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
-if %debug% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
+if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipie
 
 ::Microsoft Edge
 if %microsoftedge_selenium% == 0 goto :skipedge
 set global_name=edge
 set global_drver_type=Edge
+if %custom_selenium_script% == 0 goto :start_edge
+if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_edge
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+goto :skipedge
+:start_edge
 ::https://www.selenium.dev/selenium/docs/api/dotnet/html/N_OpenQA_Selenium_Edge.htm
 ::start powershell code
 (
@@ -281,13 +290,18 @@ if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
-if %debug% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
+if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipedge
 
 ::Chrome
 if %chrome_selenium% == 0 goto :skipchrome
 set global_name=chrome
 set global_drver_type=Chrome
+if %custom_selenium_script% == 0 goto :start_chrome
+if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_chrome
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+goto :skipchrome
+:start_chrome
 ::start powershell code
 (
 if %debug% == 1 echo Set-PSDebug -Trace 1;
@@ -325,13 +339,18 @@ if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
-if %debug% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
+if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipchrome
 
 ::Firefox
 if %firefox_selenium% == 0 goto :skipfirefox
 set global_name=firefox
 set global_drver_type=Firefox
+if %custom_selenium_script% == 0 goto :start_firefox
+if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_firefox
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+goto :skipfirefox
+:start_firefox
 ::start powershell code
 (
 if %debug% == 1 echo Set-PSDebug -Trace 1;
@@ -369,13 +388,18 @@ if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
-if %debug% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
+if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipfirefox
 
 ::Brave
 if %brave_selenium% == 0 goto :skipbrave
 set global_name=brave
 set global_drver_type=Chrome
+if %custom_selenium_script% == 0 goto :start_brave
+if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_brave
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+goto :skipbrave
+:start_brave
 ::start powershell code
 (
 if %debug% == 1 echo Set-PSDebug -Trace 1;
@@ -396,7 +420,7 @@ echo $%global_name%Options.EnsureCleanSession = $true;
 echo $%global_name%Options.PageLoadStrategy = 'Normal';
 echo $%global_name%Options.LeaveBrowserRunning = $True;
 echo $%global_name%Options.AcceptInsecureCertificates = $true;
-echo $%global_name%Options.BinaryLocation = "C:\Users\MEDIA-SERVER\AppData\Local\BraveSoftware\Brave-Browser-Nightly\Application\brave.exe";
+echo $%global_name%Options.BinaryLocation = "%LocalAppData%\BraveSoftware\Brave-Browser-Nightly\Application\brave.exe";
 echo $%global_name%Options.AddArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
 echo $Options.Navigate^(^).GoToURL^('%brave_selenium_browser_url%'^);
@@ -414,13 +438,18 @@ if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
-if %debug% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
+if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipbrave
 
 ::Vivaldi
 if %vivaldi_selenium% == 0 goto :skipvivaldi
 set global_name=vivaldi
 set global_drver_type=Chrome
+if %custom_selenium_script% == 0 goto :start_vivaldi
+if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_vivaldi
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+goto :skipvivaldi
+:start_vivaldi
 ::start powershell code
 (
 if %debug% == 1 echo Set-PSDebug -Trace 1;
@@ -440,7 +469,7 @@ echo $%global_name%Options.EnsureCleanSession = $true;
 echo $%global_name%Options.PageLoadStrategy = 'Normal';
 echo $%global_name%Options.LeaveBrowserRunning = $True;
 echo $%global_name%Options.AcceptInsecureCertificates = $true;
-echo $%global_name%Options.BinaryLocation = "C:\Users\MEDIA-SERVER\AppData\Local\Vivaldi\Application\vivaldi.exe";
+echo $%global_name%Options.BinaryLocation = "%LocalAppData%\Vivaldi\Application\vivaldi.exe";
 echo $%global_name%Options.AddArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
 echo $Options.get^('%vivaldi_selenium_browser_url%'^);
@@ -459,7 +488,7 @@ if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
-if %debug% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
+if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipvivaldi
 
 ::Opera
@@ -470,6 +499,11 @@ set operaversion=nil & if exist "%operapath%" for /D %%X in ("%operapath%\*") do
 ::end opera path
 set global_name=opera
 set global_drver_type=Chrome
+if %custom_selenium_script% == 0 goto :start_opera
+if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_opera
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+goto :skipopera
+:start_opera
 ::start powershell code
 (
 if %debug% == 1 echo Set-PSDebug -Trace 1;
@@ -510,13 +544,18 @@ if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
-if %debug% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
+if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipopera
 
 ::TOR Browser
 if %tor_selenium% == 0 goto :skiptor
 set global_name=tor
 set global_drver_type=Firefox
+if %custom_selenium_script% == 0 goto :start_tor
+if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_tor
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+goto :skiptor
+:start_tor
 ::start powershell code
 (
 if %debug% == 1 echo Set-PSDebug -Trace 1;
@@ -530,7 +569,7 @@ echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_
 echo #$%global_name%Service.HideCommandPromptWindow = $true;
 echo #$%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 echo $%global_name%Service.DriverServiceExecutableName = 'geckodriver';
-echo $%global_name%Service.FirefoxBinaryPath = 'C:\Users\MEDIA-SERVER\Desktop\Tor Browser\Browser\firefox.exe';
+echo $%global_name%Service.FirefoxBinaryPath = '%userprofile%\Desktop\Tor Browser\Browser\firefox.exe';
 if %headlessbrowser% == 1 echo $%global_name%options.AddArgument^('--headless'^);
 echo Write-Output $%global_name%options.CommandLineArguments^(^).get^(^);
 echo #$%global_name%options.AddArgument^("--kiosk"^);
@@ -558,13 +597,18 @@ if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
-if %debug% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
+if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skiptor
 
 ::PhantomJS Browser
 if %phantomjs_selenium% == 0 goto :skipphantomjs
 set global_name=phantomjs
 set global_drver_type=PhantomJS
+if %custom_selenium_script% == 0 goto :start_phantomjs
+if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_phantomjs
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+goto :skipphantomjs
+:start_phantomjs
 ::start powershell code
 (
 if %debug% == 1 echo Set-PSDebug -Trace 1;
@@ -611,7 +655,7 @@ if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
-if %debug% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
+if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipphantomjs
 
 goto :end_script
