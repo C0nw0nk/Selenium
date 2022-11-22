@@ -196,6 +196,7 @@ if %debug% == 1 echo Set-PSDebug -Trace 1;
 echo $workingpath = '%root_path:"=%';
 echo Import-Module '%root_path:"=%WebDriver.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support.dll';
+echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo #InternetExplorer setup
 echo New-ItemProperty "hkcu:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\0" -Name "2500" -Value 0 -PropertyType DWORD -Force ^| Out-Null;
 echo New-ItemProperty "hkcu:\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Zones\1" -Name "2500" -Value 0 -PropertyType DWORD -Force ^| Out-Null;
@@ -250,6 +251,7 @@ if %debug% == 1 echo Set-PSDebug -Trace 1;
 echo $workingpath = '%root_path:"=%';
 echo Import-Module '%root_path:"=%WebDriver.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support.dll';
+echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_Edge_EdgeDriverService.htm
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
@@ -292,6 +294,7 @@ if %debug% == 1 echo Set-PSDebug -Trace 1;
 echo $workingpath = '%root_path:"=%';
 echo Import-Module '%root_path:"=%WebDriver.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support.dll';
+echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_DriverService.htm
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
@@ -335,6 +338,7 @@ if %debug% == 1 echo Set-PSDebug -Trace 1;
 echo $workingpath = '%root_path:"=%';
 echo Import-Module '%root_path:"=%WebDriver.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support.dll';
+echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo $%global_name%options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_Firefox_FirefoxDriverService.htm
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
@@ -378,6 +382,7 @@ if %debug% == 1 echo Set-PSDebug -Trace 1;
 echo $workingpath = '%root_path:"=%';
 echo Import-Module '%root_path:"=%WebDriver.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support.dll';
+echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_DriverService.htm
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
@@ -422,6 +427,7 @@ if %debug% == 1 echo Set-PSDebug -Trace 1;
 echo $workingpath = '%root_path:"=%';
 echo Import-Module '%root_path:"=%WebDriver.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support.dll';
+echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_DriverService.htm
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
@@ -470,6 +476,7 @@ if %debug% == 1 echo Set-PSDebug -Trace 1;
 echo $workingpath = '%root_path:"=%';
 echo Import-Module '%root_path:"=%WebDriver.dll' -Force;
 echo Import-Module '%root_path:"=%WebDriver.Support.dll' -Force;
+echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll' -Force;
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_DriverService.htm
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
@@ -516,6 +523,7 @@ if %debug% == 1 echo Set-PSDebug -Trace 1;
 echo $workingpath = '%root_path:"=%';
 echo Import-Module '%root_path:"=%WebDriver.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support.dll';
+echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo $%global_name%options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_Firefox_FirefoxDriverService.htm
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
@@ -563,6 +571,8 @@ if %debug% == 1 echo Set-PSDebug -Trace 1;
 echo $workingpath = '%root_path:"=%';
 echo Import-Module '%root_path:"=%WebDriver.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support.dll';
+echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
+echo Write-Output 'phantomjs is running';
 echo $%global_name%options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_Firefox_FirefoxDriverService.htm
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
@@ -573,21 +583,27 @@ if %headlessbrowser% == 1 echo $%global_name%options.AddArgument^('--headless'^)
 echo Write-Output $%global_name%options.CommandLineArguments^(^).get^(^);
 echo #$%global_name%options.AddArgument^("--kiosk"^);
 echo #$%global_name%options.AddArgument^("--allow-remote"^);
-echo $%global_name%options.EnsureCleanSession = $true;
-echo $%global_name%options.PageLoadStrategy = 'Normal';
-echo $%global_name%options.LeaveBrowserRunning = $True;
-echo $%global_name%options.AcceptInsecureCertificates = $true;
+echo #$%global_name%options.EnsureCleanSession = $true;
+echo #$%global_name%options.PageLoadStrategy = 'Normal';
+echo #$%global_name%options.LeaveBrowserRunning = $True;
+echo #$%global_name%options.AcceptInsecureCertificates = $true;
 echo $%global_name%options.AddArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%options^);
 echo $Options.Url^('%phantomjs_selenium_browser_url%'^);
 echo $Options.Navigate^(^).GoToURL^('%phantomjs_selenium_browser_url%'^);
+echo $seleniumWait = New-Object -TypeName OpenQA.Selenium.Support.UI.WebDriverWait^($Options, ^(New-TimeSpan -Seconds 10^)^);
+echo $seleniumWait.Until^([OpenQA.Selenium.Support.UI.ExpectedConditions]::ElementIsVisible^([OpenQA.Selenium.By]::tagname^('title'^)^).getAttribute^('innerHTML'^)^);
 echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]/span[1]'^)^);
 echo $pageData.Click^(^);
 echo $pageData.Url^(^); #this will navigate browser to the clicked element
+echo $seleniumWait = New-Object -TypeName OpenQA.Selenium.Support.UI.WebDriverWait^($Options, ^(New-TimeSpan -Seconds 10^)^);
+echo $seleniumWait.Until^([OpenQA.Selenium.Support.UI.ExpectedConditions]::ElementIsVisible^([OpenQA.Selenium.By]::tagname^('title'^)^).getAttribute^('innerHTML'^)^);
 echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="header-content"]/nav/div[1]/div/div[2]/ul[2]/li[2]/a'^)^);
 echo $pageData.Click^(^);
 echo $pageData.Url^(^); #this will navigate browser to the clicked element
 echo Start-Sleep -s 2;
+echo $seleniumWait = New-Object -TypeName OpenQA.Selenium.Support.UI.WebDriverWait^($Options, ^(New-TimeSpan -Seconds 10^)^);
+echo $seleniumWait.Until^([OpenQA.Selenium.Support.UI.ExpectedConditions]::ElementIsVisible^([OpenQA.Selenium.By]::tagname^('title'^)^).getAttribute^('innerHTML'^)^);
 echo $pageTitle = $Options.FindElement^([OpenQA.Selenium.By]::tagname^('title'^)^).getAttribute^('innerHTML'^);
 echo Write-Output $pageTitle;
 echo $%global_name%Service.Dispose^(^);
@@ -798,6 +814,22 @@ if not defined webdriver_support_zip (
 	set file_name_to_extract=lib\%net_framework%\WebDriver.Support.dll
 	set delete_download=1
 	set webdriver_support_zip=true
+	goto :start_download
+)
+::download selenium backdated support driver dll
+if not defined webdriver_backed_support_dll (
+	set downloadurl=https://globalcdn.nuget.org/packages/selenium.webdriverbackedselenium.4.1.0.nupkg
+	set delete_download=0
+	set webdriver_backed_support_dll=true
+	goto :start_download
+)
+::selenium by default is a nupkg its a renamed zip file lets make it a zip again so we can extract the dynamic library file we need.
+if not defined webdriver_backed_zip (
+	rename "%downloadpath:"=%" "%filename:"=%.zip"
+	set downloadurl="%root_path:"=%selenium.webdriverbackedselenium.4.1.0.zip"
+	set file_name_to_extract=lib\%net_framework%\Selenium.WebDriverBackedSelenium.dll
+	set delete_download=1
+	set webdriver_backed_zip=true
 	goto :start_download
 )
 
@@ -1040,6 +1072,9 @@ if %cleanup% == 0 goto :skipcleanup
 	)
 	if exist "%root_path:"=%WebDriver.Support.dll" (
 		del "%root_path:"=%WebDriver.Support.dll"
+	)
+	if exist "%root_path:"=%Selenium.WebDriverBackedSelenium.dll" (
+		del "%root_path:"=%Selenium.WebDriverBackedSelenium.dll"
 	)
 	::End Selenium cleanup
 :skipcleanup
