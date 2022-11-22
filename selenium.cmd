@@ -136,6 +136,9 @@ set debug=0
 :: 0 disabled
 set custom_selenium_script=0
 
+
+set custom_user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.52"
+
 :: End Edit DO NOT TOUCH ANYTHING BELOW THIS POINT UNLESS YOU KNOW WHAT YOUR DOING!
 
 TITLE C0nw0nk - Selenium - github.com/C0nw0nk/Selenium
@@ -191,7 +194,7 @@ set global_drver_type=IE
 set global_drver_type_name=InternetExplorer
 if %custom_selenium_script% == 0 goto :start_ie
 if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_ie
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 goto :skipie
 :start_ie
 ::start powershell code
@@ -218,7 +221,7 @@ echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_
 echo $%global_name%Service.HideCommandPromptWindow = $true;
 echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 echo #$%global_name%Service.LibraryExtractionPath = '%root_path:"=%IEDriverServer.exe';
-if %headlessbrowser% == 1 echo $%global_name%Options.AddArgument^('--headless'^);
+if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
 echo $%global_name%Options.IntroduceInstabilityByIgnoringProtectedModeSettings = $true;
 echo $%global_name%Options.IgnoreZoomLevel = $true;
 echo $%global_name%Options.EnsureCleanSession = $true;
@@ -240,7 +243,7 @@ echo $%global_name%Service.Dispose^(^);
 if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipie
 
@@ -250,7 +253,7 @@ set global_name=edge
 set global_drver_type=Edge
 if %custom_selenium_script% == 0 goto :start_edge
 if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_edge
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 goto :skipedge
 :start_edge
 ::https://www.selenium.dev/selenium/docs/api/dotnet/html/N_OpenQA_Selenium_Edge.htm
@@ -266,14 +269,17 @@ echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_E
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
 echo $%global_name%Service.HideCommandPromptWindow = $true;
 echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
-if %headlessbrowser% == 1 echo $%global_name%Options.AddArgument^('--headless'^);
+if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
 echo $%global_name%Options.addArgument^("start-maximized"^);
 echo $%global_name%Options.addArgument^("-inprivate"^);
+echo $UserAgent = %custom_user_agent%;
+echo $%global_name%Options.addArgument^("user-agent=$UserAgent"^);
+echo $%global_name%Options.addArgument^("--window-size=1920,1080"^);
 echo $%global_name%Options.EnsureCleanSession = $true;
 echo $%global_name%Options.PageLoadStrategy = 'Normal';
-echo $%global_name%Options.LeaveBrowserRunning = $True;
-echo $%global_name%Options.AcceptInsecureCertificates = $True;
-echo $%global_name%Options.AddArgument^(^);
+echo $%global_name%Options.LeaveBrowserRunning = $true;
+echo $%global_name%Options.AcceptInsecureCertificates = $true;
+echo $%global_name%Options.addArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
 echo $Options.Navigate^(^).GoToURL^('%microsoftedge_selenium_browser_url%'^);
 echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]/span[1]'^)^);
@@ -289,7 +295,7 @@ echo $%global_name%Service.Dispose^(^);
 if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipedge
 
@@ -299,7 +305,7 @@ set global_name=chrome
 set global_drver_type=Chrome
 if %custom_selenium_script% == 0 goto :start_chrome
 if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_chrome
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 goto :skipchrome
 :start_chrome
 ::start powershell code
@@ -315,14 +321,17 @@ echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_
 echo $%global_name%Service.HideCommandPromptWindow = $true;
 echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 echo $%global_name%Service.DriverServiceExecutableName = 'chromedriver';
-if %headlessbrowser% == 1 echo $%global_name%Options.AddArgument^('--headless'^);
+if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
 echo $%global_name%Options.addArgument^("start-maximized"^);
 echo $%global_name%Options.addArgument^("--incognito"^);
+echo $UserAgent = %custom_user_agent%;
+echo $%global_name%Options.addArgument^("user-agent=$UserAgent"^);
+echo $%global_name%Options.addArgument^("--window-size=1920,1080"^);
 echo $%global_name%Options.EnsureCleanSession = $true;
 echo $%global_name%Options.PageLoadStrategy = 'Normal';
-echo $%global_name%Options.LeaveBrowserRunning = $True;
+echo $%global_name%Options.LeaveBrowserRunning = $true;
 echo $%global_name%Options.AcceptInsecureCertificates = $true;
-echo $%global_name%Options.AddArgument^(^);
+echo $%global_name%Options.addArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
 echo $Options.Navigate^(^).GoToURL^('%chrome_selenium_browser_url%'^);
 echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]/span[1]'^)^);
@@ -338,7 +347,7 @@ echo $%global_name%Service.Dispose^(^);
 if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipchrome
 
@@ -348,7 +357,7 @@ set global_name=firefox
 set global_drver_type=Firefox
 if %custom_selenium_script% == 0 goto :start_firefox
 if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_firefox
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 goto :skipfirefox
 :start_firefox
 ::start powershell code
@@ -363,15 +372,21 @@ echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_F
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
 echo $%global_name%Service.HideCommandPromptWindow = $true;
 echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
-if %headlessbrowser% == 1 echo $%global_name%options.AddArgument^('--headless'^);
-echo $%global_name%options.AddArgument^("--kiosk"^);
-echo $%global_name%options.AddArgument^("--private-window"^);
-echo $%global_name%options.EnsureCleanSession = $true;
-echo $%global_name%options.PageLoadStrategy = 'Normal';
-echo $%global_name%options.LeaveBrowserRunning = $True;
-echo $%global_name%options.AcceptInsecureCertificates = $true;
-echo $%global_name%options.AddArgument^(^);
-echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%options^);
+if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
+echo #$%global_name%Options.addArgument^("--kiosk"^);
+echo $%global_name%Options.addArgument^("--private-window"^);
+echo $UserAgent = %custom_user_agent%;
+echo #$%global_name%Options.addArgument^("user-agent=$UserAgent"^);
+echo #$%global_name%Options.addArgument^("--window-size=1920,1080"^);
+echo $%global_name%Options.addArgument^("--height=1920"^);
+echo $%global_name%Options.addArgument^("--width=1080"^);
+echo $%global_name%Options.setPreference^("general.useragent.override", "$UserAgent"^);
+echo $%global_name%Options.EnsureCleanSession = $true;
+echo $%global_name%Options.PageLoadStrategy = 'Normal';
+echo $%global_name%Options.LeaveBrowserRunning = $true;
+echo $%global_name%Options.AcceptInsecureCertificates = $true;
+echo $%global_name%Options.addArgument^(^);
+echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
 echo $Options.Url^('%firefox_selenium_browser_url%'^);
 echo $Options.Navigate^(^).GoToURL^('%firefox_selenium_browser_url%'^);
 echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]/span[1]'^)^);
@@ -387,7 +402,7 @@ echo $%global_name%Service.Dispose^(^);
 if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipfirefox
 
@@ -397,7 +412,7 @@ set global_name=brave
 set global_drver_type=Chrome
 if %custom_selenium_script% == 0 goto :start_brave
 if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_brave
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 goto :skipbrave
 :start_brave
 ::start powershell code
@@ -413,15 +428,18 @@ echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_
 echo $%global_name%Service.HideCommandPromptWindow = $true;
 echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 echo $%global_name%Service.DriverServiceExecutableName = 'chromedriver';
-if %headlessbrowser% == 1 echo $%global_name%Options.AddArgument^('--headless'^);
+if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
 echo $%global_name%Options.addArgument^("start-maximized"^);
 echo $%global_name%Options.addArgument^("--incognito"^);
+echo $UserAgent = %custom_user_agent%;
+echo $%global_name%Options.addArgument^("user-agent=$UserAgent"^);
+echo $%global_name%Options.addArgument^("--window-size=1920,1080"^);
 echo $%global_name%Options.EnsureCleanSession = $true;
 echo $%global_name%Options.PageLoadStrategy = 'Normal';
-echo $%global_name%Options.LeaveBrowserRunning = $True;
+echo $%global_name%Options.LeaveBrowserRunning = $true;
 echo $%global_name%Options.AcceptInsecureCertificates = $true;
 echo $%global_name%Options.BinaryLocation = "%LocalAppData%\BraveSoftware\Brave-Browser-Nightly\Application\brave.exe";
-echo $%global_name%Options.AddArgument^(^);
+echo $%global_name%Options.addArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
 echo $Options.Navigate^(^).GoToURL^('%brave_selenium_browser_url%'^);
 echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]/span[1]'^)^);
@@ -437,7 +455,7 @@ echo $%global_name%Service.Dispose^(^);
 if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipbrave
 
@@ -447,7 +465,7 @@ set global_name=vivaldi
 set global_drver_type=Chrome
 if %custom_selenium_script% == 0 goto :start_vivaldi
 if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_vivaldi
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 goto :skipvivaldi
 :start_vivaldi
 ::start powershell code
@@ -463,14 +481,14 @@ echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_
 echo #$%global_name%Service.HideCommandPromptWindow = $true;
 echo #$%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 echo $%global_name%Service.DriverServiceExecutableName = 'chromedriver';
-if %headlessbrowser% == 1 echo $%global_name%Options.AddArgument^('--headless'^);
+if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
 echo $%global_name%Options.addArgument^("start-maximized"^);
 echo $%global_name%Options.EnsureCleanSession = $true;
 echo $%global_name%Options.PageLoadStrategy = 'Normal';
-echo $%global_name%Options.LeaveBrowserRunning = $True;
+echo $%global_name%Options.LeaveBrowserRunning = $true;
 echo $%global_name%Options.AcceptInsecureCertificates = $true;
 echo $%global_name%Options.BinaryLocation = "%LocalAppData%\Vivaldi\Application\vivaldi.exe";
-echo $%global_name%Options.AddArgument^(^);
+echo $%global_name%Options.addArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
 echo $Options.get^('%vivaldi_selenium_browser_url%'^);
 echo #$Options.Navigate^(^).GoToURL^('%vivaldi_selenium_browser_url%'^);
@@ -487,7 +505,7 @@ echo $%global_name%Service.Dispose^(^);
 if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipvivaldi
 
@@ -501,7 +519,7 @@ set global_name=opera
 set global_drver_type=Chrome
 if %custom_selenium_script% == 0 goto :start_opera
 if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_opera
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 goto :skipopera
 :start_opera
 ::start powershell code
@@ -518,15 +536,15 @@ echo #$%global_name%Service.HideCommandPromptWindow = $true;
 echo #$%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 echo $%global_name%Service.DriverServiceExecutableName = 'operadriver';
 echo Start-Sleep -s 2;
-if %headlessbrowser% == 1 echo $%global_name%Options.AddArgument^('--headless'^);
+if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
 echo #$%global_name%Options.addArgument^("start-maximized"^);
 echo #$%global_name%Options.addArgument^("--incognito"^);
 echo #$%global_name%Options.EnsureCleanSession = $true;
 echo #$%global_name%Options.PageLoadStrategy = 'Normal';
-echo #$%global_name%Options.LeaveBrowserRunning = $True;
+echo #$%global_name%Options.LeaveBrowserRunning = $true;
 echo #$%global_name%Options.AcceptInsecureCertificates = $true;
 echo $%global_name%Options.BinaryLocation = "%operaversion%\opera.exe";
-echo #$%global_name%Options.AddArgument^(^);
+echo $%global_name%Options.addArgument^(^);
 echo #$%global_name%Remote = OpenQA.Selenium.Remote.DesiredCapabilities.%global_drver_type%;
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
 echo $Options.Navigate^(^).GoToURL^('%opera_selenium_browser_url%'^);
@@ -543,7 +561,7 @@ echo $%global_name%Service.Dispose^(^);
 if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipopera
 
@@ -553,7 +571,7 @@ set global_name=tor
 set global_drver_type=Firefox
 if %custom_selenium_script% == 0 goto :start_tor
 if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_tor
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 goto :skiptor
 :start_tor
 ::start powershell code
@@ -570,18 +588,67 @@ echo #$%global_name%Service.HideCommandPromptWindow = $true;
 echo #$%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 echo $%global_name%Service.DriverServiceExecutableName = 'geckodriver';
 echo $%global_name%Service.FirefoxBinaryPath = '%userprofile%\Desktop\Tor Browser\Browser\firefox.exe';
-if %headlessbrowser% == 1 echo $%global_name%options.AddArgument^('--headless'^);
-echo Write-Output $%global_name%options.CommandLineArguments^(^).get^(^);
-echo #$%global_name%options.AddArgument^("--kiosk"^);
-echo #$%global_name%options.AddArgument^("--allow-remote"^);
-echo $%global_name%options.EnsureCleanSession = $true;
-echo $%global_name%options.PageLoadStrategy = 'Normal';
-echo $%global_name%options.LeaveBrowserRunning = $True;
-echo $%global_name%options.AcceptInsecureCertificates = $true;
-echo $%global_name%Options.BinaryLocation = "%userprofile%\Desktop\Tor Browser\Browser\firefox.exe";
-echo $%global_name%options.AddArgument^(^);
-echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%options^);
-echo $Options.Url^('%tor_selenium_browser_url%'^);
+if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
+echo Write-Output $%global_name%Options.CommandLineArguments^(^).get^(^);
+echo #$%global_name%Options.addArgument^("--kiosk"^);
+echo #$%global_name%Options.addArgument^("--private-window"^);
+echo $%global_name%Options.addArgument^('allow-remote'^);
+echo $UserAgent = %custom_user_agent%;
+echo #$%global_name%Options.addArgument^("user-agent=$UserAgent"^);
+echo #$%global_name%Options.addArgument^("--window-size=1920,1080"^);
+echo $%global_name%Options.addArgument^("--height=600"^);
+echo $%global_name%Options.addArgument^("--width=600"^);
+echo $%global_name%Options.Profile = "%userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Data\Browser\profile.default";
+echo $%global_name%Options.setPreference^("general.useragent.override", "$UserAgent"^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.enabled", $true^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.builtin_type", "obs4"^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.enabled", $true^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.source", "0"^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.quickstart.enabled", $true^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.0","0"^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.1","0"^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.2","0"^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.3","0"^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.4","0"^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.5","0"^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.6","0"^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.7","0"^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.8","0"^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.9","0"^);
+echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.10","0"^);
+echo $%global_name%Options.setPreference^(^);
+echo $%global_name%Options.EnsureCleanSession = $true;
+echo $%global_name%Options.PageLoadStrategy = 'Normal';
+echo $%global_name%Options.LeaveBrowserRunning = $true;
+echo $%global_name%Options.AcceptInsecureCertificates = $true;
+echo $%global_name%Options.addArgument^(^);
+echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
+echo #$pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="configureButton"]'^)^);
+echo #$pageData.Click^(^);
+echo Start-Sleep -s 20;
+echo #$Options.SwitchTo(^).Window^($Options.WindowHandles[1]^);
+echo #Start-Sleep -s 2;
+echo #$Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="torPreferences-addBridge-buttonBuiltinBridge"]'^)^).Click^(^);
+echo #Start-Sleep -s 2;
+echo #$Options.SwitchTo(^).Window^($Options.WindowHandles[1]^);
+echo #$Options.SendKeys^([OpenQA.Selenium.Keys]::arrow_up^);
+echo #$Options.SendKeys^([OpenQA.Selenium.Keys]::arrow_right^);
+echo #$Options.SendKeys^([OpenQA.Selenium.Keys]::arrow_left^);
+echo #$Options.SendKeys^([OpenQA.Selenium.Keys]::enter^);
+echo #Start-Sleep -s 2;
+echo #$pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('/hbox/button[2]'^)^);
+echo #$pageData.Click^(^);
+echo #Start-Sleep -s 2;
+echo #$pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="torPreferences-addBridge-buttonBuiltinBridge"]'^)^);
+echo #$pageData.Click^(^);
+echo #Start-Sleep -s 2;
+echo #$pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="quickstartCheckboxLabel"]'^)^);
+echo #$pageData.Click^(^);
+echo #Start-Sleep -s 2;
+echo #$pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="connectButton"]'^)^);
+echo #$pageData.Click^(^);
+echo #Start-Sleep -s 20;
+echo #$Options.Url^('%tor_selenium_browser_url%'^);
 echo $Options.Navigate^(^).GoToURL^('%tor_selenium_browser_url%'^);
 echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]/span[1]'^)^);
 echo $pageData.Click^(^);
@@ -596,7 +663,7 @@ echo $%global_name%Service.Dispose^(^);
 if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skiptor
 
@@ -606,7 +673,7 @@ set global_name=phantomjs
 set global_drver_type=PhantomJS
 if %custom_selenium_script% == 0 goto :start_phantomjs
 if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_phantomjs
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 goto :skipphantomjs
 :start_phantomjs
 ::start powershell code
@@ -623,16 +690,16 @@ echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_
 echo #$%global_name%Service.HideCommandPromptWindow = $true;
 echo #$%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 echo $%global_name%Service.DriverServiceExecutableName = 'phantomjs';
-if %headlessbrowser% == 1 echo $%global_name%options.AddArgument^('--headless'^);
-echo Write-Output $%global_name%options.CommandLineArguments^(^).get^(^);
-echo #$%global_name%options.AddArgument^("--kiosk"^);
-echo #$%global_name%options.AddArgument^("--allow-remote"^);
-echo #$%global_name%options.EnsureCleanSession = $true;
-echo #$%global_name%options.PageLoadStrategy = 'Normal';
-echo #$%global_name%options.LeaveBrowserRunning = $True;
-echo #$%global_name%options.AcceptInsecureCertificates = $true;
-echo $%global_name%options.AddArgument^(^);
-echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%options^);
+if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
+echo Write-Output $%global_name%Options.CommandLineArguments^(^).get^(^);
+echo #$%global_name%Options.addArgument^("--kiosk"^);
+echo #$%global_name%Options.addArgument^("--allow-remote"^);
+echo #$%global_name%Options.EnsureCleanSession = $true;
+echo #$%global_name%Options.PageLoadStrategy = 'Normal';
+echo #$%global_name%Options.LeaveBrowserRunning = $true;
+echo #$%global_name%Options.AcceptInsecureCertificates = $true;
+echo $%global_name%Options.addArgument^(^);
+echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
 echo $Options.Url^('%phantomjs_selenium_browser_url%'^);
 echo $Options.Navigate^(^).GoToURL^('%phantomjs_selenium_browser_url%'^);
 echo $seleniumWait = New-Object -TypeName OpenQA.Selenium.Support.UI.WebDriverWait^($Options, ^(New-TimeSpan -Seconds 10^)^);
@@ -654,7 +721,7 @@ echo $%global_name%Service.Dispose^(^);
 if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
-powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" %*
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
 :skipphantomjs
 
