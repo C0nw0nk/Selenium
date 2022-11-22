@@ -64,6 +64,8 @@ https://github.com/C0nw0nk/Selenium/pulls
 
 Because nobody has bothered to make a phantomjs or selenium portable and easy soloution for windows they are all requiring you to setup python and pip and have way to many dependencies this has NONE!
 
+It is also useful for automating web based tasked on windows for example with Sonarr or Radarr even just opening facebook and clicking like on the latest post from a friend.
+
 # How do i find XPath to use inside the script ?
 
 Open developer tools in your browser normally
