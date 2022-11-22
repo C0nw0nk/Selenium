@@ -539,7 +539,7 @@ echo $%global_name%options.EnsureCleanSession = $true;
 echo $%global_name%options.PageLoadStrategy = 'Normal';
 echo $%global_name%options.LeaveBrowserRunning = $True;
 echo $%global_name%options.AcceptInsecureCertificates = $true;
-echo $%global_name%Options.BinaryLocation = "C:\Users\MEDIA-SERVER\Desktop\Tor Browser\Browser\firefox.exe";
+echo $%global_name%Options.BinaryLocation = "%userprofile%\Desktop\Tor Browser\Browser\firefox.exe";
 echo $%global_name%options.AddArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%options^);
 echo $Options.Url^('%tor_selenium_browser_url%'^);
