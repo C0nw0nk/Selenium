@@ -40,7 +40,7 @@ Opera web Browser
 
 Brave web Browser
 
-Tor web Browser
+Tor web Browser - Configurable Bridges - obfs4 - meek-azure - snowflake
 
 Vivaldi web Browser
 
