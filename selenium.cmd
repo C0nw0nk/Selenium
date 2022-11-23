@@ -89,7 +89,13 @@ set opera_selenium_browser_url=https://www.bbc.co.uk/
 ::Tor selenium browser
 :: 1 enabled
 :: 0 disabled
-set tor_selenium=0
+set tor_selenium=1
+
+::Tor Bridge to use for encrypted traffic
+::1 obfs4 - obfs4 is a type of built-in bridge that makes your Tor traffic look random. They are also less likely to be blocked than their predecessors, obfs3 bridges.
+::2 snowflake - Snowflake is a built-in bridge that defeats censorship by routing your connection through Snowflake proxies, ran by volunteers.
+::3 meek-azure - meek-azure is a built-in bridge that makes it look like you are using a Microsoft web site instead of using Tor.
+set tor_proxy_bridge=1
 
 ::the webpage we want to access to perform a remote automated task on for Tor
 set tor_selenium_browser_url=https://www.bbc.co.uk/
@@ -136,7 +142,7 @@ set debug=0
 :: 0 disabled
 set custom_selenium_script=0
 
-
+::Set custom user-agent to use if you do not want to expose your default selenium browser user-agent
 set custom_user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.52"
 
 :: End Edit DO NOT TOUCH ANYTHING BELOW THIS POINT UNLESS YOU KNOW WHAT YOUR DOING!
@@ -324,6 +330,7 @@ echo $%global_name%Service.DriverServiceExecutableName = 'chromedriver';
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
 echo $%global_name%Options.addArgument^("start-maximized"^);
 echo $%global_name%Options.addArgument^("--incognito"^);
+echo $%global_name%Options.addArgument^("--disable-blink-features=AutomationControlled"^);
 echo $UserAgent = %custom_user_agent%;
 echo $%global_name%Options.addArgument^("user-agent=$UserAgent"^);
 echo $%global_name%Options.addArgument^("--window-size=1920,1080"^);
@@ -431,6 +438,7 @@ echo $%global_name%Service.DriverServiceExecutableName = 'chromedriver';
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
 echo $%global_name%Options.addArgument^("start-maximized"^);
 echo $%global_name%Options.addArgument^("--incognito"^);
+echo $%global_name%Options.addArgument^("--disable-blink-features=AutomationControlled"^);
 echo $UserAgent = %custom_user_agent%;
 echo $%global_name%Options.addArgument^("user-agent=$UserAgent"^);
 echo $%global_name%Options.addArgument^("--window-size=1920,1080"^);
@@ -441,6 +449,7 @@ echo $%global_name%Options.AcceptInsecureCertificates = $true;
 echo $%global_name%Options.BinaryLocation = "%LocalAppData%\BraveSoftware\Brave-Browser-Nightly\Application\brave.exe";
 echo $%global_name%Options.addArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
+echo #$Options.executeScript^("Object.defineProperty^(navigator, 'webdriver', ^{set: ^(^) => undefined^}^)"^);
 echo $Options.Navigate^(^).GoToURL^('%brave_selenium_browser_url%'^);
 echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]/span[1]'^)^);
 echo $pageData.Click^(^);
@@ -450,8 +459,11 @@ echo $pageData.Click^(^);
 echo $pageData.Url^(^); #this will navigate browser to the clicked element
 echo Start-Sleep -s 2;
 echo $pageTitle = $Options.FindElement^([OpenQA.Selenium.By]::tagname^('title'^)^).getAttribute^('innerHTML'^);
-echo Write-Output $pageTitle;
+echo $driver_script = $Options.executeScript^("return navigator.webdriver"^);
+echo Write-Output $driver_script;
+echo ##Write-Output $pageTitle;
 echo $%global_name%Service.Dispose^(^);
+echo Start-Sleep -s 300;
 if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
@@ -483,6 +495,7 @@ echo #$%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 echo $%global_name%Service.DriverServiceExecutableName = 'chromedriver';
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
 echo $%global_name%Options.addArgument^("start-maximized"^);
+echo $%global_name%Options.addArgument^("--disable-blink-features=AutomationControlled"^);
 echo $%global_name%Options.EnsureCleanSession = $true;
 echo $%global_name%Options.PageLoadStrategy = 'Normal';
 echo $%global_name%Options.LeaveBrowserRunning = $true;
@@ -539,6 +552,7 @@ echo Start-Sleep -s 2;
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
 echo #$%global_name%Options.addArgument^("start-maximized"^);
 echo #$%global_name%Options.addArgument^("--incognito"^);
+echo $%global_name%Options.addArgument^("--disable-blink-features=AutomationControlled"^);
 echo #$%global_name%Options.EnsureCleanSession = $true;
 echo #$%global_name%Options.PageLoadStrategy = 'Normal';
 echo #$%global_name%Options.LeaveBrowserRunning = $true;
@@ -569,6 +583,112 @@ if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global
 if %tor_selenium% == 0 goto :skiptor
 set global_name=tor
 set global_drver_type=Firefox
+::higher security keeping the tor.exe encryption secure I made it a setting for debugging reasons when i built this
+set tor_proxy_password_enabled=1
+(
+echo function Get-RandomCharacters^($length, $characters^) { 
+echo $random = 1..$length ^| ForEach-Object { Get-Random -Maximum $characters.length } 
+echo $private:ofs="" ;
+echo return [String]$characters[$random];
+echo }
+echo $randompass ^+= Get-RandomCharacters -length 20 -characters 'ABCDEFGHKLMNOPRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+echo Write-Output $randompass;
+)>"%root_path:"=%%~n0-%global_name%-generate-random-pass.ps1"
+for /f "tokens=*" %%a in ('
+powershell -ExecutionPolicy Unrestricted -File ^"%root_path:"=%%~n0-%global_name%-generate-random-pass.ps1^" ^"%*^" -Verb runAs
+') do set random_password_output=%%a
+del "%root_path:"=%%~n0-%global_name%-generate-random-pass.ps1"
+set tor_proxy_password="%random_password_output%"
+
+for /f "tokens=*" %%a in ('
+taskkill /F /IM tor.exe /T 2^>Nul
+') do break
+
+(
+echo function Create-Tor-Password-Hash ^{
+echo $torBrowser = "%userprofile%\Desktop\Tor Browser";
+echo $TOR_Password = %tor_proxy_password%;
+echo $TOR_HOST = "127.0.0.1";
+echo $TOR_PORT = 9051;
+echo $CTRL_PORT = 9151;
+echo $tor_location = "$torBrowser\Browser\TorBrowser\Tor";
+echo $torrc_defaults = "$torBrowser\Browser\TorBrowser\Data\Tor\torrc-defaults";
+echo $torrc = "$torBrowser\Browser\TorBrowser\Data\Tor\torrc";
+echo $tordata = "$torBrowser\Browser\TorBrowser\Data\Tor";
+echo $geoIP = "$torBrowser\Browser\TorBrowser\Data\Tor\geoip";
+echo $geoIPv6 = "$torBrowser\Browser\TorBrowser\Data\Tor\geoip6";
+echo $oniondir = "$torBrowser\Browser\TorBrowser\Data\Tor\onion-auth";
+echo $torExe = "$tor_location\tor.exe";
+echo $controllerProcess = $PID;
+echo function Get-OneToLastItem ^{ param ^($arr^) return $arr^[$arr.Length - 2^]^}
+echo $TOR_HashPass_RAW = ^& "$torExe" --defaults-torrc $torrc -f $torrc DataDirectory $tordata ClientOnionAuthDir $oniondir GeoIPFile $geoIP GeoIPv6File $geoIPv6 --hash-password $TOR_Password ^| more;
+echo $Tor_HashPass = Get-OneToLastItem^($TOR_HashPass_RAW^);
+echo Write-Output $TOR^_HashPass^_RAW;
+echo ^}
+echo Create-Tor-Password-Hash
+)>"%root_path:"=%%~n0-%global_name%-hash.ps1"
+for /f "tokens=*" %%a in ('
+powershell -ExecutionPolicy Unrestricted -File ^"%root_path:"=%%~n0-%global_name%-hash.ps1^" ^"%*^" -Verb runAs
+') do set password_hash_output=%%a
+del "%root_path:"=%%~n0-%global_name%-hash.ps1"
+if %tor_proxy_password_enabled% == 1 echo %password_hash_output%
+(
+if %tor_proxy_bridge% == 1 echo Bridge obfs4 193.11.166.194:27025 1AE2C08904527FEA90C4C4F8C1083EA59FBC6FAF cert=ItvYZzW5tn6v3G4UnQa6Qz04Npro6e81AP70YujmK/KXwDFPTs3aHXcHp4n8Vt6w/bv8cA iat-mode=0
+if %tor_proxy_bridge% == 1 echo Bridge obfs4 193.11.166.194:27015 2D82C2E354D531A68469ADF7F878FA6060C6BACA cert=4TLQPJrTSaDffMK7Nbao6LC7G9OW/NHkUwIdjLSS3KYf0Nv4/nQiiI8dY2TcsQx01NniOg iat-mode=0
+if %tor_proxy_bridge% == 1 echo Bridge obfs4 193.11.166.194:27020 86AC7B8D430DAC4117E9F42C9EAED18133863AAF cert=0LDeJH4JzMDtkJJrFphJCiPqKx7loozKN7VNfuukMGfHO0Z8OGdzHVkhVAOfo1mUdv9cMg iat-mode=0
+if %tor_proxy_bridge% == 1 echo Bridge obfs4 193.11.166.194:27025 1AE2C08904527FEA90C4C4F8C1083EA59FBC6FAF cert=ItvYZzW5tn6v3G4UnQa6Qz04Npro6e81AP70YujmK/KXwDFPTs3aHXcHp4n8Vt6w/bv8cA iat-mode=0
+if %tor_proxy_bridge% == 1 echo Bridge obfs4 5.45.100.58:1337 66002E678B3A3C6968AB1944C233A82A34FCF0B8 cert=cZei7/b4KsHqb0tTn3mnAZ^+LruUAJ1^+yiXKwWxmNFLbpfQycmibCoYjlmX8n1gGskaiQLQ iat-mode=0
+if %tor_proxy_bridge% == 1 echo Bridge obfs4 23.94.134.145:8082 1F36B62A1ECED5C884D188330D7291ED6A98827F cert=sCzTCeprtMZ3IyVjJo^+ksd0d/XYbPDT3TrfBM0nQv^+DL1LkFC5eRPmXPpAsfsUNeIxfzJA iat-mode=0
+if %tor_proxy_bridge% == 1 echo Bridge obfs4 51.68.156.67:14638 66CDD5C6A077CAE91B497B22A9EAEAF7C55B023D cert=RqjodnFshvL9WvQx0jPN4OxxV0ITbmw1Y8Bsoz3aYXtl1ShWU4VfDTM64SXi9Ngq/MCBFw iat-mode=0
+if %tor_proxy_bridge% == 1 echo Bridge obfs4 51.68.86.212:33427 75D8ECC96D0249ABE56E86D1F2325FBFAE02FB57 cert=3En/B81R63^+m1PiiQwhiAXsIMP9YmytOwTGBvckE4VlU8rFeqTkGoQkA8oayQ0f1MrxhMQ iat-mode=0
+if %tor_proxy_bridge% == 1 echo Bridge obfs4 185.44.209.160:15045 3176C361647E23B1371E4EB444B05D6841386C11 cert=fgq1fgr8UDsBPUHY1Jbe9u6Ozj^+eF5/zsMk9yqfvpxNC02rtgM8/MKYR/V4P5FO4CDbrBw iat-mode=0
+if %tor_proxy_bridge% == 1 echo Bridge obfs4 185.247.226.57:443 C2A28A62022616D17173FBB79EFF8162628EE136 cert=2LUpLXg7zAfYuCYFr3aMlYI2i1LMqj5we^+s06LtVrVrUV1EGcjoxTyj054Ykdyu1G5XTUQ iat-mode=0
+if %tor_proxy_bridge% == 1 echo Bridge obfs4 139.162.53.29:9091 27243AB18BEDA83528E87D585DAFF625ABD04CE8 cert=IOcH6JY^+WUTsUh2zj43IRKqoQ8p/3QpZOCYitHLd9N8LbUOexnapA4NEAE/QFfdm3wDECw iat-mode=0
+if %tor_proxy_bridge% == 2 echo Bridge snowflake 192.0.2.3:80 2B280B23E1107BB62ABFC40DDCC8824814F80A72 fingerprint=2B280B23E1107BB62ABFC40DDCC8824814F80A72 url=https://snowflake-broker.torproject.net.global.prod.fastly.net/ front=cdn.sstatic.net ice=stun:stun.l.google.com:19302,stun:stun.altar.com.pl:3478,stun:stun.antisip.com:3478,stun:stun.bluesip.net:3478,stun:stun.dus.net:3478,stun:stun.epygi.com:3478,stun:stun.sonetel.com:3478,stun:stun.sonetel.net:3478,stun:stun.stunprotocol.org:3478,stun:stun.uls.co.za:3478,stun:stun.voipgate.com:3478,stun:stun.voys.nl:3478 utls-imitate=hellorandomizedalpn
+if %tor_proxy_bridge% == 3 echo Bridge meek_lite 192.0.2.18:80 BE776A53492E1E044A26F17306E1BC46A55A1625 url=https://meek.azureedge.net/ front=ajax.aspnetcdn.com
+echo ClientOnionAuthDir %userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Data\Tor\onion-auth
+echo DataDirectory %userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Data\Tor
+echo GeoIPFile %userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Data\Tor\geoip
+echo GeoIPv6File %userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Data\Tor\geoip6
+echo UseBridges 1
+echo AvoidDiskWrites 1
+echo Log notice stdout
+echo CookieAuthentication 0
+if %tor_proxy_password_enabled% == 1 echo HashedControlPassword %password_hash_output%
+echo DormantCanceledByStartup 1
+echo ClientTransportPlugin meek_lite,obfs2,obfs3,obfs4,scramblesuit exec %userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Tor\PluggableTransports\obfs4proxy.exe
+echo ClientTransportPlugin snowflake exec %userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Tor\PluggableTransports\snowflake-client.exe
+)>"%userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Data\Tor\torrc"
+(
+echo function Start-Tor {
+echo $torBrowser = "%userprofile%\Desktop\Tor Browser";
+echo $TOR_Password = "__HashedControlSessionPassword";
+echo $TOR_HOST = "127.0.0.1";
+echo $TOR_PORT = 9051;
+echo $CTRL_PORT = 9151;
+echo $tor_location = "$torBrowser\Browser\TorBrowser\Tor";
+echo $torrc_defaults = "$torBrowser\Browser\TorBrowser\Data\Tor\torrc-defaults";
+echo $torrc = "$torBrowser\Browser\TorBrowser\Data\Tor\torrc";
+echo $tordata = "$torBrowser\Browser\TorBrowser\Data\Tor";
+echo $geoIP = "$torBrowser\Browser\TorBrowser\Data\Tor\geoip";
+echo $geoIPv6 = "$torBrowser\Browser\TorBrowser\Data\Tor\geoip6";
+echo $oniondir = "$torBrowser\Browser\TorBrowser\Data\Tor\onion-auth";
+echo $torExe = "$tor_location\tor.exe";
+echo $controllerProcess = $PID;
+echo function Get-OneToLastItem { param ^($arr^) return $arr[$arr.Length - 2]}
+echo $TOR_HashPass_RAW = ^& "$torExe" --defaults-torrc $torrc -f $torrc DataDirectory $tordata ClientOnionAuthDir $oniondir GeoIPFile $geoIP GeoIPv6File $geoIPv6 --hash-password $TOR_Password ^| more;
+echo $Tor_HashPass = Get-OneToLastItem^($TOR_HashPass_RAW^);
+echo $TOR_VERSION_RAW = ^& "$torExe" --defaults-torrc $torrc -f $torrc DataDirectory $tordata ClientOnionAuthDir $oniondir GeoIPFile $geoIP GeoIPv6File $geoIPv6 --version ^| more;
+echo $Tor_Version = Get-OneToLastItem^($TOR_VERSION_RAW^);
+echo Write-Host "Running $Tor_Version" -ForegroundColor DarkGray;
+echo Write-Host "Press [Ctrl+C] to stop Tor service.";
+if %tor_proxy_password_enabled% == 0 echo ^& "$torExe" --defaults-torrc $torrc -f $torrc DataDirectory $tordata ClientOnionAuthDir $oniondir GeoIPFile $geoIP GeoIPv6File $geoIPv6 ^+__ControlPort $CTRL_PORT ^+__SocksPort "${TOR_HOST}:$TOR_PORT ExtendedErrors IPv6Traffic PreferIPv6 KeepAliveIsolateSOCKSAuth" __OwningControllerProcess $controllerProcess ^| oh ^| more;
+if %tor_proxy_password_enabled% == 1 echo ^& "$torExe" --defaults-torrc $torrc -f $torrc DataDirectory $tordata ClientOnionAuthDir $oniondir GeoIPFile $geoIP GeoIPv6File $geoIPv6 HashedControlPassword $TOR_HashPass_RAW ^+__ControlPort $CTRL_PORT ^+__SocksPort "${TOR_HOST}:$TOR_PORT ExtendedErrors IPv6Traffic PreferIPv6 KeepAliveIsolateSOCKSAuth" __OwningControllerProcess $controllerProcess ^| oh ^| more;
+echo }
+echo Start-Tor
+)>"%root_path:"=%%~n0-%global_name%-tor-service.ps1"
+start ^"^" powershell -ExecutionPolicy Unrestricted -File ^"%root_path:"=%%~n0-%global_name%-tor-service.ps1^" ^"%*^" -Verb runAs
+timeout /t 2
 if %custom_selenium_script% == 0 goto :start_tor
 if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_tor
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
@@ -581,6 +701,7 @@ echo $workingpath = '%root_path:"=%';
 echo Import-Module '%root_path:"=%WebDriver.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support.dll';
 echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
+echo Start-Process '%userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Tor\tor.exe';
 echo $%global_name%options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_Firefox_FirefoxDriverService.htm
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
@@ -591,31 +712,30 @@ echo $%global_name%Service.FirefoxBinaryPath = '%userprofile%\Desktop\Tor Browse
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
 echo Write-Output $%global_name%Options.CommandLineArguments^(^).get^(^);
 echo #$%global_name%Options.addArgument^("--kiosk"^);
-echo #$%global_name%Options.addArgument^("--private-window"^);
-echo $%global_name%Options.addArgument^('allow-remote'^);
+echo $%global_name%Options.addArgument^("--private-window"^);
 echo $UserAgent = %custom_user_agent%;
-echo #$%global_name%Options.addArgument^("user-agent=$UserAgent"^);
 echo #$%global_name%Options.addArgument^("--window-size=1920,1080"^);
-echo $%global_name%Options.addArgument^("--height=600"^);
-echo $%global_name%Options.addArgument^("--width=600"^);
+echo #$%global_name%Options.addArgument^("--height=600"^);
+echo #$%global_name%Options.addArgument^("--width=600"^);
+echo $%global_name%Options.addArgument^("--disable-blink-features=AutomationControlled"^);
 echo $%global_name%Options.Profile = "%userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Data\Browser\profile.default";
 echo $%global_name%Options.setPreference^("general.useragent.override", "$UserAgent"^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.enabled", $true^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.builtin_type", "obs4"^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.enabled", $true^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.source", "0"^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.quickstart.enabled", $true^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.0","0"^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.1","0"^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.2","0"^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.3","0"^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.4","0"^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.5","0"^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.6","0"^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.7","0"^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.8","0"^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.9","0"^);
-echo #$%global_name%Options.setPreference^("torbrowser.settings.bridges.bridge_strings.10","0"^);
+echo $%global_name%Options.setPreference^("webdriver.load.strategy", "unstable"^);
+echo $%global_name%Options.setPreference^("network.proxy.type", 1^);
+echo $%global_name%Options.setPreference^("network.proxy.socks","127.0.0.1"^);
+echo $%global_name%Options.setPreference^("network.proxy.socks_port", 9051^);
+echo $%global_name%Options.setPreference^("network.proxy.socks_remote_dns", $true^);
+echo $%global_name%Options.setPreference^("network.proxy.socks_version", 5^);
+if %tor_proxy_password_enabled% == 1 echo $%global_name%Options.setPreference^("network.proxy.socks_password", %tor_proxy_password%^)
+echo $%global_name%Options.setPreference^("places.history.enabled", $false^);
+echo $%global_name%Options.setPreference^("privacy.clearOnShutdown.offlineApps", $true^);
+echo $%global_name%Options.setPreference^("privacy.clearOnShutdown.passwords", $true^);
+echo $%global_name%Options.setPreference^("privacy.clearOnShutdown.siteSettings", $true^);
+echo $%global_name%Options.setPreference^("privacy.sanitize.sanitizeOnShutdown", $true^);
+echo $%global_name%Options.setPreference^("signon.rememberSignons", $false^);
+echo $%global_name%Options.setPreference^("network.cookie.lifetimePolicy", 2^);
+echo $%global_name%Options.setPreference^("network.dns.disablePrefetch", $true^);
+echo $%global_name%Options.setPreference^("network.http.sendRefererHeader", 0^);
 echo $%global_name%Options.setPreference^(^);
 echo $%global_name%Options.EnsureCleanSession = $true;
 echo $%global_name%Options.PageLoadStrategy = 'Normal';
@@ -623,37 +743,16 @@ echo $%global_name%Options.LeaveBrowserRunning = $true;
 echo $%global_name%Options.AcceptInsecureCertificates = $true;
 echo $%global_name%Options.addArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
-echo #$pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="configureButton"]'^)^);
-echo #$pageData.Click^(^);
-echo Start-Sleep -s 20;
 echo #$Options.SwitchTo(^).Window^($Options.WindowHandles[1]^);
-echo #Start-Sleep -s 2;
-echo #$Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="torPreferences-addBridge-buttonBuiltinBridge"]'^)^).Click^(^);
-echo #Start-Sleep -s 2;
-echo #$Options.SwitchTo(^).Window^($Options.WindowHandles[1]^);
-echo #$Options.SendKeys^([OpenQA.Selenium.Keys]::arrow_up^);
-echo #$Options.SendKeys^([OpenQA.Selenium.Keys]::arrow_right^);
-echo #$Options.SendKeys^([OpenQA.Selenium.Keys]::arrow_left^);
-echo #$Options.SendKeys^([OpenQA.Selenium.Keys]::enter^);
-echo #Start-Sleep -s 2;
-echo #$pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('/hbox/button[2]'^)^);
-echo #$pageData.Click^(^);
-echo #Start-Sleep -s 2;
-echo #$pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="torPreferences-addBridge-buttonBuiltinBridge"]'^)^);
-echo #$pageData.Click^(^);
-echo #Start-Sleep -s 2;
-echo #$pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="quickstartCheckboxLabel"]'^)^);
-echo #$pageData.Click^(^);
-echo #Start-Sleep -s 2;
-echo #$pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="connectButton"]'^)^);
-echo #$pageData.Click^(^);
-echo #Start-Sleep -s 20;
+echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="connectButton"]'^)^);
+echo $pageData.Click^(^);
+echo Start-Sleep -s 5;
 echo #$Options.Url^('%tor_selenium_browser_url%'^);
 echo $Options.Navigate^(^).GoToURL^('%tor_selenium_browser_url%'^);
-echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]/span[1]'^)^);
+echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]'^)^);
 echo $pageData.Click^(^);
 echo $pageData.Url^(^); #this will navigate browser to the clicked element
-echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="header-content"]/nav/div[1]/div/div[2]/ul[2]/li[2]/a'^)^);
+echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('/html/body/div[6]/header/div/div/nav[2]/ul/li[2]/a'^)^);
 echo $pageData.Click^(^);
 echo $pageData.Url^(^); #this will navigate browser to the clicked element
 echo Start-Sleep -s 2;
@@ -665,6 +764,10 @@ if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 ::end powershell code
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
 if %debug% == 0 if %custom_selenium_script% == 0 del "%root_path:"=%%~n0-%global_name%.ps1"
+for /f "tokens=*" %%a in ('
+taskkill /F /IM tor.exe /T 2^>Nul
+') do break
+del "%root_path:"=%%~n0-%global_name%-tor-service.ps1"
 :skiptor
 
 ::PhantomJS Browser
