@@ -662,7 +662,7 @@ echo ClientTransportPlugin snowflake exec %userprofile%\Desktop\Tor Browser\Brow
 (
 echo function Start-Tor {
 echo $torBrowser = "%userprofile%\Desktop\Tor Browser";
-echo $TOR_Password = "__HashedControlSessionPassword";
+echo $TOR_Password = %tor_proxy_password%;
 echo $TOR_HOST = "127.0.0.1";
 echo $TOR_PORT = 9051;
 echo $CTRL_PORT = 9151;
