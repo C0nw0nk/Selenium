@@ -118,7 +118,7 @@ set headlessbrowser=0
 ::default is not to cleanup because its most likely we will run our automated task again
 :: 1 enabled
 :: 0 disabled
-set cleanup=1
+set cleanup=0
 
 ::instead of just closing the window after our automated web tasking we pause to view and check once your happy you can set this to 0
 :: 1 enabled
@@ -374,7 +374,7 @@ echo $workingpath = '%root_path:"=%';
 echo Import-Module '%root_path:"=%WebDriver.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support.dll';
 echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
-echo $%global_name%options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
+echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_Firefox_FirefoxDriverService.htm
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
 echo $%global_name%Service.HideCommandPromptWindow = $true;
@@ -702,7 +702,7 @@ echo Import-Module '%root_path:"=%WebDriver.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support.dll';
 echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo Start-Process '%userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Tor\tor.exe';
-echo $%global_name%options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
+echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_Firefox_FirefoxDriverService.htm
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
 echo #$%global_name%Service.HideCommandPromptWindow = $true;
@@ -787,7 +787,7 @@ echo Import-Module '%root_path:"=%WebDriver.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support.dll';
 echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo Write-Output 'phantomjs is running';
-echo $%global_name%options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
+echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_Firefox_FirefoxDriverService.htm
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
 echo #$%global_name%Service.HideCommandPromptWindow = $true;
