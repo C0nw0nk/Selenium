@@ -687,8 +687,7 @@ if %tor_proxy_password_enabled% == 1 echo ^& "$torExe" --defaults-torrc $torrc -
 echo }
 echo Start-Tor
 )>"%root_path:"=%%~n0-%global_name%-tor-service.ps1"
-start ^"^" powershell -ExecutionPolicy Unrestricted -File ^"%root_path:"=%%~n0-%global_name%-tor-service.ps1^" ^"%*^" -Verb runAs
-timeout /t 2
+start /MIN ^"^" powershell -ExecutionPolicy Unrestricted -File ^"%root_path:"=%%~n0-%global_name%-tor-service.ps1^" ^"%*^" -Verb runAs
 if %custom_selenium_script% == 0 goto :start_tor
 if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_tor
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
