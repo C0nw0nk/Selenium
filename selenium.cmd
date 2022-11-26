@@ -73,7 +73,7 @@ set brave_selenium_browser_url=https://www.bbc.co.uk/
 ::vivaldi selenium browser
 :: 1 enabled
 :: 0 disabled
-set vivaldi_selenium=0
+set vivaldi_selenium=1
 
 ::the webpage we want to access to perform a remote automated task on for vivaldi
 set vivaldi_selenium_browser_url=https://www.bbc.co.uk/
@@ -220,19 +220,17 @@ echo New-ItemProperty "hkcu:\Software\Microsoft\Internet Explorer\Main" -Name "T
 echo New-ItemProperty "hkcu:\Software\Microsoft\Internet Explorer\Zoom" -Name "ZoomFactor" -Value 100000 -PropertyType DWORD -Force ^| Out-Null;
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type_name%Options;
 echo $%global_name%Options.InitialBrowserUrl = "https://www.google.co.uk/";
-echo #$%global_name%Options.ForceCreateProcessApi = $true;
-echo #$%global_name%Options.BrowserCommandLineArguments = "-k";
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_IE_InternetExplorerDriverService.htm
-echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type_name%DriverService]::CreateDefaultService^(^);
-echo $%global_name%Service.HideCommandPromptWindow = $true;
-echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
-echo #$%global_name%Service.LibraryExtractionPath = '%root_path:"=%IEDriverServer.exe';
+echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type_name%DriverService]::CreateDefaultService^('%root_path:"=%','IEDriverServer.exe'^);
+echo #$%global_name%Service.HideCommandPromptWindow = $true;
+echo #$%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
-echo $%global_name%Options.IntroduceInstabilityByIgnoringProtectedModeSettings = $true;
+echo $%global_name%Options.addArgument^("-inprivate"^);
 echo $%global_name%Options.IgnoreZoomLevel = $true;
 echo $%global_name%Options.EnsureCleanSession = $true;
 echo $%global_name%Options.PageLoadStrategy = 'Normal';
-echo $%global_name%Options.useCreateProcessApiToLaunchIe^(^);
+echo $%global_name%Options.UnexpectedAlertBehavior = 'ignore';
+echo $%global_name%Options.IntroduceInstabilityByIgnoringProtectedModeSettings = $true;
 echo $%global_name%Options.addArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type_name%Driver^($%global_name%Service,$%global_name%Options^);
 echo $Options.Navigate^(^).GoToURL^('%internetexplorer_selenium_browser_url%'^);
@@ -463,7 +461,6 @@ echo $driver_script = $Options.executeScript^("return navigator.webdriver"^);
 echo Write-Output $driver_script;
 echo ##Write-Output $pageTitle;
 echo $%global_name%Service.Dispose^(^);
-echo Start-Sleep -s 300;
 if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
@@ -489,32 +486,30 @@ echo Import-Module '%root_path:"=%WebDriver.Support.dll';
 echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_DriverService.htm
-echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
-echo #$%global_name%Service.HideCommandPromptWindow = $true;
-echo #$%global_name%Service.SuppressInitialDiagnosticInformation = $true;
-echo $%global_name%Service.DriverServiceExecutableName = 'chromedriver';
+echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^('%root_path:"=%','vivaldichromedriver.exe'^);
+echo $%global_name%Service.HideCommandPromptWindow = $true;
+echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
-echo #$%global_name%Options.addArgument^("start-maximized"^);
-echo #$%global_name%Options.addArgument^("--disable-blink-features=AutomationControlled"^);
-echo $%global_name%Options.addArgument^("--no-sandbox"^);
-echo #$%global_name%Options.addArgument^("--first-renderer-process"^);
+echo $%global_name%Options.addArgument^("start-maximized"^);
+echo $%global_name%Options.addArgument^("--incognito"^);
+echo $%global_name%Options.addArgument^("--disable-blink-features=AutomationControlled"^);
+echo #$%global_name%Options.addArgument^("--user-data-dir='%LocalAppData%\Vivaldi\User Data'"^);
 echo $%global_name%Options.EnsureCleanSession = $true;
 echo $%global_name%Options.PageLoadStrategy = 'Normal';
 echo $%global_name%Options.LeaveBrowserRunning = $true;
 echo $%global_name%Options.AcceptInsecureCertificates = $true;
+echo #$%global_name%Options.BinaryLocation = "%LocalAppData%\Vivaldi\Application\update_notifier.exe";
 echo $%global_name%Options.BinaryLocation = "%LocalAppData%\Vivaldi\Application\vivaldi.exe";
-echo $%global_name%Options.Profile = "%LocalAppData%\Vivaldi\User Data\Default";
+echo #$%global_name%Options.BinaryLocation = "%LocalAppData%\Vivaldi\Application\vivaldi_proxy.exe";
+echo #$%global_name%Options.Profile = "%LocalAppData%\Vivaldi\User Data\Default";
+echo #$%global_name%Options.setPreference^("--user-data-dir=%LocalAppData%\Vivaldi\User Data"^);
 echo $%global_name%Options.addArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
-echo #$Options.get^('%vivaldi_selenium_browser_url%'^);
+echo $timeout = 10;
+echo [OpenQA.Selenium.Support.UI.WebDriverWait]$wait = new-object OpenQA.Selenium.Support.UI.WebDriverWait ^($Options,[System.TimeSpan]::FromSeconds^($timeout^)^);
+echo [OpenQA.Selenium.Interactions.Actions]$actions = new-object OpenQA.Selenium.Interactions.Actions ^($Options^);
 echo $Options.Navigate^(^).GoToURL^('%vivaldi_selenium_browser_url%'^);
-echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]/span[1]'^)^);
-echo $pageData.Click^(^);
-echo $pageData.Url^(^); #this will navigate browser to the clicked element
-echo $pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="header-content"]/nav/div[1]/div/div[2]/ul[2]/li[2]/a'^)^);
-echo $pageData.Click^(^);
-echo $pageData.Url^(^); #this will navigate browser to the clicked element
-echo Start-Sleep -s 2;
+echo $wait.Until^([OpenQA.Selenium.Support.UI.ExpectedConditions]::ElementExists^([OpenQA.Selenium.By]::tagname^('title'^)^)^);
 echo $pageTitle = $Options.FindElement^([OpenQA.Selenium.By]::tagname^('title'^)^).getAttribute^('innerHTML'^);
 echo Write-Output $pageTitle;
 echo $%global_name%Service.Dispose^(^);
@@ -532,7 +527,7 @@ set operapath=%LocalAppData%\Programs\Opera
 set operaversion=nil & if exist "%operapath%" for /D %%X in ("%operapath%\*") do echo %%X|find "." >nul && set operaversion=%%X
 ::end opera path
 set global_name=opera
-set global_drver_type=Chrome
+set global_drver_type=Opera
 if %custom_selenium_script% == 0 goto :start_opera
 if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_opera
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
@@ -542,36 +537,23 @@ goto :skipopera
 (
 if %debug% == 1 echo Set-PSDebug -Trace 1;
 echo $workingpath = '%root_path:"=%';
-echo Import-Module '%root_path:"=%WebDriver.dll' -Force;
-echo Import-Module '%root_path:"=%WebDriver.Support.dll' -Force;
-echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll' -Force;
+echo Import-Module '%root_path:"=%WebDriver.dll';
+echo Import-Module '%root_path:"=%WebDriver.Support.dll';
+echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_DriverService.htm
-echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^('%root_path:"=%'^);
+echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^('%root_path:"=%','operadriver.exe'^);
 echo $%global_name%Service.HideCommandPromptWindow = $true;
 echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
-echo $%global_name%Service.DriverServiceExecutableName = 'operadriver';
-echo #$%global_name%Service.Port = '9223';
-echo #$%global_name%Options.setPreference^("webdriver.chrome.whitelistedIps", ""^);
-echo #$%global_name%Service.UrlPathPrefix = "http";
-echo #$%global_name%Service.PortServerAddress = "127.0.0.1:9222";
-echo Write-Output $%global_name%Service.ServiceUrl;
-echo Write-Output $%global_name%Service.UrlPathPrefix^(^);
-echo Start-Sleep -s 2;
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
+echo write-output "lol";
 echo $%global_name%Options.BinaryLocation = "%operaversion%\opera.exe";
 echo #$%gloabl_name%Options.BinaryLocation = "%LocalAppData%\Programs\Opera\launcher.exe";
-echo #$%global_name%Options.addArgument^(^);
-echo #$Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%gloabl_name%Service,$%global_name%Options^);
-echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^('%root_path:"=%',$%global_name%Options^);
+echo $%global_name%Options.addArgument^(^);
+echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%gloabl_name%Service,$%global_name%Options^);
 echo #$webData = Invoke-WebRequest -Uri "http://127.0.0.1:9222/json/version";
 echo #$releases = ConvertFrom-Json $webData.content;
 echo #write-output $releases.webSocketDebuggerUrl;
-echo #$%global_name%Options.setExperimentalOption^("debuggeraddress",$releases.webSocketDebuggerUrl^);
-echo #$%global_name%Options.setExperimentalOption^(^);
-echo #$Options = New-Object OpenQA.Selenium.Remote.RemoteWebDriver^($releases.webSocketDebuggerUrl,$%global_name%Remote^);
-echo #Start-Sleep -s 10;
-echo #$Options.get^("http://google.com/"^);
 echo $Options.Navigate^(^).GoToURL^('%opera_selenium_browser_url%'^);
 echo #$pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="bbccookies-continue-button"]/span[1]'^)^);
 echo #$pageData.Click^(^);
@@ -580,9 +562,9 @@ echo #$pageData = $Options.FindElement^([OpenQA.Selenium.By]::xpath^('//^*[@id="
 echo #$pageData.Click^(^);
 echo $pageData.Url^(^); #this will navigate browser to the clicked element
 echo #Start-Sleep -s 2;
-echo #$pageTitle = $Options.FindElement^([OpenQA.Selenium.By]::tagname^('title'^)^).getAttribute^('innerHTML'^);
-echo #Write-Output $pageTitle;
-echo #$%global_name%Service.Dispose^(^);
+echo $pageTitle = $Options.FindElement^([OpenQA.Selenium.By]::tagname^('title'^)^).getAttribute^('innerHTML'^);
+echo Write-Output $pageTitle;
+echo $%global_name%Service.Dispose^(^);
 if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
@@ -935,6 +917,20 @@ if %microsoftedge_selenium% == 1 (
 		goto :start_download
 	)
 )
+
+::vivaldi runs a older chromedriver build vivaldi://about/page/ will show you the version you will need
+if %vivaldi_selenium% == 1 (
+	if not defined vivaldi_chromedriver_exe (
+		set downloadurl=https://chromedriver.storage.googleapis.com/106.0.5249.61/chromedriver_win32.zip
+		set file_name_to_extract=chromedriver.exe
+		set delete_download=1
+		set vivaldi_chromedriver_exe=true
+		goto :start_download
+	)
+	rename "%root_path:"=%chromedriver.exe" "vivaldichromedriver.exe"
+)
+
+::opera runs a different version but their github is delayed so... opera://about
 
 set chromedriver_needed=0
 if %chrome_selenium% == 1 set chromedriver_needed=1
@@ -1342,6 +1338,12 @@ if %cleanup% == 0 goto :skipcleanup
 			taskkill /F /IM phantomjs.exe /T 2^>Nul
 		') do break
 		del "%root_path:"=%phantomjs.exe"
+	)
+	if exist "%root_path:"=%vivaldichromedriver.exe" (
+		for /f "tokens=*" %%a in ('
+			taskkill /F /IM vivaldichromedriver.exe /T 2^>Nul
+		') do break
+		del "%root_path:"=%vivaldichromedriver.exe"
 	)
 	::End Webdriver cleanup
 
