@@ -532,7 +532,7 @@ set operapath=%LocalAppData%\Programs\Opera
 set operaversion=nil & if exist "%operapath%" for /D %%X in ("%operapath%\*") do echo %%X|find "." >nul && set operaversion=%%X
 ::end opera path
 set global_name=opera
-set global_drver_type=Opera
+set global_drver_type=Chrome
 if %custom_selenium_script% == 0 goto :start_opera
 if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_opera
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
@@ -546,11 +546,10 @@ echo Import-Module '%root_path:"=%WebDriver.dll' -Force;
 echo Import-Module '%root_path:"=%WebDriver.Support.dll' -Force;
 echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll' -Force;
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
-echo #$%global_name%Remote = New-Object OpenQA.Selenium.Opera.OperaOptions.Capability;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_DriverService.htm
-echo #$%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
-echo #$%global_name%Service.HideCommandPromptWindow = $true;
-echo #$%global_name%Service.SuppressInitialDiagnosticInformation = $true;
+echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^('%root_path:"=%'^);
+echo $%global_name%Service.HideCommandPromptWindow = $true;
+echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 echo $%global_name%Service.DriverServiceExecutableName = 'operadriver';
 echo #$%global_name%Service.Port = '9223';
 echo #$%global_name%Options.setPreference^("webdriver.chrome.whitelistedIps", ""^);
@@ -560,25 +559,11 @@ echo Write-Output $%global_name%Service.ServiceUrl;
 echo Write-Output $%global_name%Service.UrlPathPrefix^(^);
 echo Start-Sleep -s 2;
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
-echo #$%global_name%Options.addArgument^("start-maximized"^);
-echo #$%global_name%Options.addArgument^("--incognito"^);
-echo #$%global_name%Options.addArgument^("--disable-blink-features=AutomationControlled"^);
-echo #$%global_name%Options.addArgument^("--remote-debugging-port=9222"^);
-echo #$%global_name%Options.addArgument^("allow-elevated-browser"^);
-echo #$%global_name%Options.addArgument^("user-data-dir=remote-profile"^);
-echo #$%global_name%Options.addArgument^("--user-data-dir=remote-profile"^);
-echo #$%global_name%Options.addArgument^("--app=https://www.google.com/"^);
-echo #$%global_name%Options.addExperimentalOption^("w3c", $true^);
-echo #$%global_name%Options.EnsureCleanSession = $true;
-echo #$%global_name%Options.PageLoadStrategy = 'Normal';
-echo #$%global_name%Options.LeaveBrowserRunning = $true;
-echo #$%global_name%Options.AcceptInsecureCertificates = $true;
 echo $%global_name%Options.BinaryLocation = "%operaversion%\opera.exe";
 echo #$%gloabl_name%Options.BinaryLocation = "%LocalAppData%\Programs\Opera\launcher.exe";
 echo #$%global_name%Options.addArgument^(^);
-echo #$%global_name%Remote = New-Object OpenQA.Selenium.Remote.DesiredCapabilities;
-echo #$%global_name%Options.setCapability^(ChromeOptions.CAPABILITY, $%global_name%Options^);
-echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Options^);
+echo #$Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%gloabl_name%Service,$%global_name%Options^);
+echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^('%root_path:"=%',$%global_name%Options^);
 echo #$webData = Invoke-WebRequest -Uri "http://127.0.0.1:9222/json/version";
 echo #$releases = ConvertFrom-Json $webData.content;
 echo #write-output $releases.webSocketDebuggerUrl;
@@ -817,6 +802,12 @@ echo Import-Module '%root_path:"=%WebDriver3.11.0.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support3.11.0.dll';
 echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium3.11.0.dll';
 echo [OpenQA.Selenium.PhantomJS.PhantomJSOptions]$options = New-Object OpenQA.Selenium.PhantomJS.PhantomJSOptions;
+echo $service = [OpenQA.Selenium.PhantomJS.PhantomJSDriverService]::CreateDefaultService^('%root_path:"=%'^);
+echo $service.HideCommandPromptWindow = $true;
+echo $service.SuppressInitialDiagnosticInformation = $true;
+echo $service.IgnoreSslErrors = $true;
+echo $service.WebSecurity = $false;
+if %headlessbrowser% == 1 echo $options.addArgument^('--headless'^);
 echo $caps = [OpenQA.Selenium.Remote.DesiredCapabilities]::phantomjs^(^);
 echo $caps.SetCapability^('CapabilityType.ACCEPT_SSL_CERTS', $true^);
 echo $cli_args = @^(^);
@@ -827,7 +818,8 @@ echo $options.AddAdditionalCapability^("phantomjs.page.settings.ignore-ssl-error
 echo $options.AddAdditionalCapability^("phantomjs.page.settings.webSecurityEnabled", $false^);
 echo $options.AddAdditionalCapability^("phantomjs.page.settings.userAgent", %custom_user_agent%^);
 echo $phantomjspath = '%root_path:"=%';
-echo $driver = New-Object OpenQA.Selenium.PhantomJS.PhantomJSDriver^($phantomjspath, $options^);
+echo #$driver = New-Object OpenQA.Selenium.PhantomJS.PhantomJSDriver^($phantomjspath, $options^);
+echo $driver = New-Object OpenQA.Selenium.PhantomJS.PhantomJSDriver^($service, $options^);
 echo #$driver = New-Object OpenQA.Selenium.Remote.RemoteWebDriver^($uri,$caps^);
 echo $driver.Navigate^(^).GoToURL^('%phantomjs_selenium_browser_url%'^);
 echo $pageTitle = $driver.FindElement^([OpenQA.Selenium.By]::tagname^('title'^)^).getAttribute^('innerHTML'^);
@@ -840,9 +832,14 @@ echo $wait.Until^([OpenQA.Selenium.Support.UI.ExpectedConditions]::ElementExists
 echo $element = $driver.FindElement^([OpenQA.Selenium.By]::CssSelector^($selector^)^);
 echo Write-Host $element.getAttribute^('href'^);
 echo $driver.Navigate^(^).GoToURL^($element.getAttribute^('href'^)^); #this will navigate browser to the element
-echo Start-Sleep -s 2;
+echo $wait.Until^([OpenQA.Selenium.Support.UI.ExpectedConditions]::ElementExists^([OpenQA.Selenium.By]::tagname^('title'^)^)^);
 echo $pageTitle = $driver.FindElement^([OpenQA.Selenium.By]::tagname^('title'^)^).getAttribute^('innerHTML'^);
 echo Write-Output $pageTitle;
+echo $driver.Navigate^(^).GoToURL^('https://ifconfig.me/ua'^);
+echo $wait.Until^([OpenQA.Selenium.Support.UI.ExpectedConditions]::ElementExists^([OpenQA.Selenium.By]::tagname^('pre'^)^)^);
+echo $pageTitle = $driver.FindElement^([OpenQA.Selenium.By]::tagname^('pre'^)^).getAttribute^('innerHTML'^);
+echo Write-Output $pageTitle;
+echo $driver.Dispose^(^);
 if %close_selenium% == 1 echo $driver.Close^(^);$driver.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
 ::end powershell code
