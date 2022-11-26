@@ -20,6 +20,8 @@ Supports Operadriver for Opera `operadriver.exe`
 
 Supports PhantomJS for PhantomJS `phantomjs.exe`
 
+GhostDriver being a part of PhantomJS driver
+
 Full driver support!
 
 Allows you to enable headless so the automated browser tasks are hidden so you can game or work watch videos
