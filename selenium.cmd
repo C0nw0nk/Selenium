@@ -153,6 +153,8 @@ if defined varpass goto :start_exe
 
 set root_path="%~dp0"
 
+set site=https://chromedriver.storage.googleapis.com/LATEST_RELEASE
+
 ::Elevate to admin rights
 
 :start
@@ -270,7 +272,7 @@ echo Import-Module '%root_path:"=%WebDriver.Support.dll';
 echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_Edge_EdgeDriverService.htm
-echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
+echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^('%root_path:"=%','msedgedriver.exe'^);
 echo $%global_name%Service.HideCommandPromptWindow = $true;
 echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
@@ -321,7 +323,7 @@ echo Import-Module '%root_path:"=%WebDriver.Support.dll';
 echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_DriverService.htm
-echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
+echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^('%root_path:"=%','chromedriver.exe'^);
 echo $%global_name%Service.HideCommandPromptWindow = $true;
 echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 echo $%global_name%Service.DriverServiceExecutableName = 'chromedriver';
@@ -374,7 +376,7 @@ echo Import-Module '%root_path:"=%WebDriver.Support.dll';
 echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_Firefox_FirefoxDriverService.htm
-echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
+echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^('%root_path:"=%','geckodriver.exe'^);
 echo $%global_name%Service.HideCommandPromptWindow = $true;
 echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
@@ -429,7 +431,7 @@ echo Import-Module '%root_path:"=%WebDriver.Support.dll';
 echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_DriverService.htm
-echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
+echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^('%root_path:"=%','chromedriver.exe'^);
 echo $%global_name%Service.HideCommandPromptWindow = $true;
 echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 echo $%global_name%Service.DriverServiceExecutableName = 'chromedriver';
@@ -527,7 +529,7 @@ set operapath=%LocalAppData%\Programs\Opera
 set operaversion=nil & if exist "%operapath%" for /D %%X in ("%operapath%\*") do echo %%X|find "." >nul && set operaversion=%%X
 ::end opera path
 set global_name=opera
-set global_drver_type=Opera
+set global_drver_type=Chrome
 if %custom_selenium_script% == 0 goto :start_opera
 if not exist "%root_path:"=%%~n0-%global_name%.ps1" goto :start_opera
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-%global_name%.ps1" "%*" -Verb runAs
@@ -546,11 +548,10 @@ echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_
 echo $%global_name%Service.HideCommandPromptWindow = $true;
 echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
-echo write-output "lol";
 echo $%global_name%Options.BinaryLocation = "%operaversion%\opera.exe";
-echo #$%gloabl_name%Options.BinaryLocation = "%LocalAppData%\Programs\Opera\launcher.exe";
+echo #$%global_name%Options.BinaryLocation = "%LocalAppData%\Programs\Opera\launcher.exe";
 echo $%global_name%Options.addArgument^(^);
-echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%gloabl_name%Service,$%global_name%Options^);
+echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
 echo #$webData = Invoke-WebRequest -Uri "http://127.0.0.1:9222/json/version";
 echo #$releases = ConvertFrom-Json $webData.content;
 echo #write-output $releases.webSocketDebuggerUrl;
@@ -696,7 +697,7 @@ echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
 echo Start-Process '%userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Tor\tor.exe';
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_Firefox_FirefoxDriverService.htm
-echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^(^);
+echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^('%root_path:"=%','geckodriver.exe'^);
 echo #$%global_name%Service.HideCommandPromptWindow = $true;
 echo #$%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 echo $%global_name%Service.DriverServiceExecutableName = 'geckodriver';
@@ -784,14 +785,14 @@ echo Import-Module '%root_path:"=%WebDriver3.11.0.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support3.11.0.dll';
 echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium3.11.0.dll';
 echo [OpenQA.Selenium.PhantomJS.PhantomJSOptions]$options = New-Object OpenQA.Selenium.PhantomJS.PhantomJSOptions;
-echo $service = [OpenQA.Selenium.PhantomJS.PhantomJSDriverService]::CreateDefaultService^('%root_path:"=%'^);
+echo $service = [OpenQA.Selenium.PhantomJS.PhantomJSDriverService]::CreateDefaultService^('%root_path:"=%','phantomjs.exe'^);
 echo $service.HideCommandPromptWindow = $true;
 echo $service.SuppressInitialDiagnosticInformation = $true;
 echo $service.IgnoreSslErrors = $true;
 echo $service.WebSecurity = $false;
 if %headlessbrowser% == 1 echo $options.addArgument^('--headless'^);
-echo $caps = [OpenQA.Selenium.Remote.DesiredCapabilities]::phantomjs^(^);
-echo $caps.SetCapability^('CapabilityType.ACCEPT_SSL_CERTS', $true^);
+echo #$caps = [OpenQA.Selenium.Remote.DesiredCapabilities]::phantomjs^(^);
+echo #$caps.SetCapability^('CapabilityType.ACCEPT_SSL_CERTS', $true^);
 echo $cli_args = @^(^);
 echo $cli_args ^+=  "--web-security=no";
 echo $cli_args ^+= "--ignore-ssl-errors=yes";
@@ -800,9 +801,7 @@ echo $options.AddAdditionalCapability^("phantomjs.page.settings.ignore-ssl-error
 echo $options.AddAdditionalCapability^("phantomjs.page.settings.webSecurityEnabled", $false^);
 echo $options.AddAdditionalCapability^("phantomjs.page.settings.userAgent", %custom_user_agent%^);
 echo $phantomjspath = '%root_path:"=%';
-echo #$driver = New-Object OpenQA.Selenium.PhantomJS.PhantomJSDriver^($phantomjspath, $options^);
 echo $driver = New-Object OpenQA.Selenium.PhantomJS.PhantomJSDriver^($service, $options^);
-echo #$driver = New-Object OpenQA.Selenium.Remote.RemoteWebDriver^($uri,$caps^);
 echo $driver.Navigate^(^).GoToURL^('%phantomjs_selenium_browser_url%'^);
 echo $pageTitle = $driver.FindElement^([OpenQA.Selenium.By]::tagname^('title'^)^).getAttribute^('innerHTML'^);
 echo Write-Output $pageTitle;
@@ -886,15 +885,83 @@ echo Set objShell = Nothing
 cscript //nologo "%root_path:"=%%~n0.vbs"
 if %debug% == 0 del "%root_path:"=%%~n0.vbs"
 :next_download
+goto :skip_version_grab
+:start_version_grab
+(
+echo var http = WScript.CreateObject^('MSXML2.ServerXMLHTTP.6.0'^);
+echo var url = WScript.Arguments.Item^(0^)
+echo http.open^("GET", url, false^);
+echo http.send^(^);
+echo if ^(http.status === 200^) WScript.Echo^(http.responseText^);
+echo WScript.Quit^(0^);
+)>"%root_path:"=%%~n0-ip.vbs"
+for /f "tokens=*" %%a in ('
+cscript //nologo //E:JScript ^"%root_path:"=%%~n0-ip.vbs^"^ %site%
+') do set "vbs_output=%%a"
+del "%root_path:"=%%~n0-ip.vbs"
+set site=https://chromedriver.storage.googleapis.com/%vbs_output%/chromedriver_win32.zip
+:skip_version_grab
+goto :skip_latest_driver_github
+:get_latest_driver_github
+::Get latest geckodriver
+(
+echo $repo = "%grab_latest_repo:"=%"
+echo $filenamePattern = "*%grab_latest_file:"=%"
+echo $preRelease = $%grab_latest_prerelease%
+echo if ^($preRelease^) {
+echo $releasesUri = "https://api.github.com/repos/$repo/releases"
+echo $downloadUri = ^(^(Invoke-RestMethod -Method GET -Uri $releasesUri^)[0].assets ^| Where-Object name -like $filenamePattern ^).browser_download_url
+echo } else {
+echo $releasesUri = "https://api.github.com/repos/$repo/releases/latest"
+echo $downloadUri = ^(^(Invoke-RestMethod -Method GET -Uri $releasesUri^).assets ^| Where-Object name -like $filenamePattern ^).browser_download_url
+echo }
+echo Write-Output $downloadUri ^| Out-File "%root_path:"=%%~n0-psoutput.txt"
+)>"%root_path:"=%%~n0-latest-driver.ps1"
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-latest-driver.ps1" "%*" -Verb runAs
+for /f "tokens=*" %%a in ('type "%root_path:"=%%~n0-psoutput.txt"') do set "latest_driver_output=%%a"
+del "%root_path:"=%%~n0-latest-driver.ps1"
+del "%root_path:"=%%~n0-psoutput.txt"
+:skip_latest_driver_github
+goto :skip_latest_download_link
+:get_latest_download_link
+::Get latest download link of a webpage
+(
+echo $url = "%grab_latest_url:"=%"
+echo $html_tag = "%grab_latest_html_tag:"=%"
+echo $matching_string = "%grab_latest_matching_string:"=%"
+echo $downloadUri = ^(^(Invoke-WebRequest $url -UseBasicParsing^).Links ^| Where-Object $html_tag -like $matching_string^)[0].href
+echo Write-Output $downloadUri ^| Out-File "%root_path:"=%%~n0-psoutput.txt"
+echo #Write-Output $downloadUri.Substring^($downloadUri.LastIndexOf^("/"^) ^+ 1^) ^| Out-File "%root_path:"=%%~n0-psfilenameoutput.txt"
+)>"%root_path:"=%%~n0-latest-download.ps1"
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-latest-download.ps1" "%*" -Verb runAs
+for /f "tokens=*" %%a in ('type "%root_path:"=%%~n0-psoutput.txt"') do set "latest_download_output=%%a"
+del "%root_path:"=%%~n0-latest-download.ps1"
+del "%root_path:"=%%~n0-psoutput.txt"
+del "%root_path:"=%%~n0-psfilenameoutput.txt"
+:skip_latest_download_link
 
 ::https://www.selenium.dev/documentation/webdriver/browsers/
 
 ::download the internet explorer portable instance
 if %internetexplorer_selenium% == 1 (
 	if not defined IEDriverServer_exe (
-		set downloadurl=https://github.com/SeleniumHQ/selenium/releases/download/selenium-4.6.0/IEDriverServer_x64_4.6.0.zip
+		if not defined get_latest_iedriverserver_64 (
+			set grab_latest_repo="SeleniumHQ/selenium"
+			set grab_latest_file="_x64_*.zip"
+			set grab_latest_prerelease=false
+			set get_latest_iedriverserver_64=true
+			goto :get_latest_driver_github
+		)
+		set downloadurl=%latest_driver_output%
 		if %PROCESSOR_ARCHITECTURE%==x86 (
-			set downloadurl=https://github.com/SeleniumHQ/selenium/releases/download/selenium-4.6.0/IEDriverServer_Win32_4.6.0.zip
+			if not defined get_latest_iedriverserver_32 (
+				set grab_latest_repo="SeleniumHQ/selenium"
+				set grab_latest_file="_Win32_*.zip"
+				set grab_latest_prerelease=false
+				set get_latest_iedriverserver_32=true
+				goto :get_latest_driver_github
+			)
+			set downloadurl=%latest_driver_output%
 		)
 		set file_name_to_extract=IEDriverServer.exe
 		set delete_download=1
@@ -907,9 +974,16 @@ if %internetexplorer_selenium% == 1 (
 if %microsoftedge_selenium% == 1 (
 	::microsoft edge driver
 	if not defined msedgedriver_exe (
-		set downloadurl=https://msedgedriver.azureedge.net/107.0.1418.42/edgedriver_win64.zip
+		if not defined get_latest_msedgedriver_exe (
+			set grab_latest_url="https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/"
+			set grab_latest_html_tag="aria-label"
+			set grab_latest_matching_string="*x64 stable channel*"
+			set get_latest_msedgedriver_exe=true
+			goto :get_latest_download_link
+		)
+		set downloadurl=%latest_download_output%
 		if %PROCESSOR_ARCHITECTURE%==x86 (
-			set downloadurl=https://msedgedriver.azureedge.net/107.0.1418.42/edgedriver_win32.zip
+			set downloadurl=%latest_download_output:_win64=_win32%
 		)
 		set file_name_to_extract=msedgedriver.exe
 		set delete_download=1
@@ -918,10 +992,34 @@ if %microsoftedge_selenium% == 1 (
 	)
 )
 
+if %vivaldi_selenium% == 0 goto :skipversion_vivaldi
+if not defined vivaldi_version_check (
+set vivaldi_version_check=true
+) else (
+goto :skipversion_vivaldi
+)
+::get vivaldi chromedriver version to extract the right file that will be compatible
+set alias=REG QUERY ^"HKEY_CURRENT_USER\SOFTWARE\Vivaldi\BLBeacon^"
+for /f "tokens=*" %%a in ('%alias% /s ^| FIND ^"version^" 2^>Nul') do (
+set vivaldi_version=%%a
+::set "vivaldi_version=!vivaldi_version:~1,-1!"
+set "vivaldi_version=!vivaldi_version:.=!"
+set "vivaldi_version=!vivaldi_version: =!"
+set "vivaldi_version=!vivaldi_version:Version=!"
+set "vivaldi_version=!vivaldi_version:Target=!"
+set "vivaldi_version=!vivaldi_version:REG_SZ=!"
+set "vivaldi_version=!vivaldi_version:~,+3!"
+set site=https://chromedriver.storage.googleapis.com/LATEST_RELEASE_!vivaldi_version!
+)
+::if [!vivaldi_version!]==[] set site=https://chromedriver.storage.googleapis.com/LATEST_RELEASE
+goto :start_version_grab
+::end vivaldi check
+:skipversion_vivaldi
+
 ::vivaldi runs a older chromedriver build vivaldi://about/page/ will show you the version you will need
 if %vivaldi_selenium% == 1 (
 	if not defined vivaldi_chromedriver_exe (
-		set downloadurl=https://chromedriver.storage.googleapis.com/106.0.5249.61/chromedriver_win32.zip
+		set downloadurl=%site%
 		set file_name_to_extract=chromedriver.exe
 		set delete_download=1
 		set vivaldi_chromedriver_exe=true
@@ -931,6 +1029,17 @@ if %vivaldi_selenium% == 1 (
 )
 
 ::opera runs a different version but their github is delayed so... opera://about
+if %opera_selenium% == 1 (
+	::download the opera webdriver portable instance
+	if not defined operadriver_exe (
+		set downloadurl=https://chromedriver.storage.googleapis.com/108.0.5359.22/chromedriver_win32.zip
+		set file_name_to_extract=chromedriver.exe
+		set delete_download=1
+		set operadriver_exe=true
+		goto :start_download
+	)
+	rename "%root_path:"=%chromedriver.exe" "operadriver.exe"
+)
 
 set chromedriver_needed=0
 if %chrome_selenium% == 1 set chromedriver_needed=1
@@ -938,10 +1047,15 @@ if %opera_selenium% == 1 set chromedriver_needed=1
 if %vivaldi_selenium% == 1 set chromedriver_needed=1
 if %brave_selenium% == 1 set chromedriver_needed=1
 if %chromedriver_needed% == 1 (
+	if not defined chromedriver_version (
+		set chromedriver_version=true
+		set site=https://chromedriver.storage.googleapis.com/LATEST_RELEASE
+		goto :start_version_grab
+	)
 	::download the google chrome portable instance
 	if not defined chromedriver_exe (
 		::only 32bit windows available chromedriver ?
-		set downloadurl=https://chromedriver.storage.googleapis.com/107.0.5304.18/chromedriver_win32.zip
+		set downloadurl=%site%
 		set file_name_to_extract=chromedriver.exe
 		set delete_download=1
 		set chromedriver_exe=true
@@ -955,27 +1069,29 @@ if %tor_selenium% == 1 set firefoxdriver_needed=1
 if %firefoxdriver_needed% == 1 (
 	::download the mozilla firefox webdriver portable instance
 	if not defined geckodriver_exe (
-		set downloadurl=https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-win64.zip
+		::Get latest geckodriver
+		if not defined get_latest_geckodriver_64 (
+			set grab_latest_repo="mozilla/geckodriver"
+			set grab_latest_file="win64.zip"
+			set grab_latest_prerelease=false
+			set get_latest_geckodriver_64=true
+			goto :get_latest_driver_github
+		)
+		::End get latest geckodriver
+		set downloadurl=%latest_driver_output%
 		if %PROCESSOR_ARCHITECTURE%==x86 (
-			set downloadurl=https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-win32.zip
+			if not defined get_latest_geckodriver_32 (
+				set grab_latest_repo="mozilla/geckodriver"
+				set grab_latest_file="win32.zip"
+				set grab_latest_prerelease=false
+				set get_latest_geckodriver_32=true
+				goto :get_latest_driver_github
+			)
+			set downloadurl=%latest_driver_output%
 		)
 		set file_name_to_extract=geckodriver.exe
 		set delete_download=1
 		set geckodriver_exe=true
-		goto :start_download
-	)
-)
-
-if %opera_selenium% == 1 (
-	::download the opera webdriver portable instance
-	if not defined operadriver_exe (
-		set downloadurl=https://github.com/operasoftware/operachromiumdriver/releases/download/v.107.0.5304.88/operadriver_win64.zip
-		if %PROCESSOR_ARCHITECTURE%==x86 (
-			set downloadurl=https://github.com/operasoftware/operachromiumdriver/releases/download/v.107.0.5304.88/operadriver_win32.zip
-		)
-		set file_name_to_extract=operadriver.exe
-		set delete_download=1
-		set operadriver_exe=true
 		goto :start_download
 	)
 )
@@ -1000,13 +1116,19 @@ if !framework_version! gtr 4500000 set net_framework=net45
 if %phantomjs_selenium% == 1 (
 	::download the phantomjs webdriver portable instance
 	if not defined phantomjs_exe (
-		set downloadurl=https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-windows.zip
-		set file_name_to_extract=phantomjs.exe
-		set delete_download=1
+		set downloadurl=https://www.nuget.org/api/v2/package/PhantomJS/2.1.1
+		set delete_download=0
 		set phantomjs_exe=true
 		goto :start_download
 	)
-	
+	if not defined phantomjs_zip (
+		rename "%downloadpath:"=%" "%filename:"=%.zip"
+		set downloadurl="%root_path:"=%%filename:"=%.zip"
+		set file_name_to_extract=phantomjs.exe
+		set delete_download=1
+		set phantomjs_zip=true
+		goto :start_download
+	)	
 	::phantomjs is not compatible with selenium versions above >3.11 so we add backwards compatibility
 	::download selenium
 	if not defined webdriver_dll_phantomjs (
@@ -1085,7 +1207,14 @@ if !framework_version! gtr 5000000 set net_framework=net5.0
 
 ::download selenium
 if not defined webdriver_dll (
-	set downloadurl=https://globalcdn.nuget.org/packages/selenium.webdriver.4.6.0.nupkg
+	if not defined get_latest_webdriver_dll (
+		set grab_latest_url="https://www.nuget.org/packages/Selenium.WebDriver"
+		set grab_latest_html_tag="data-track"
+		set grab_latest_matching_string="*outbound-manual-download"
+		set get_latest_webdriver_dll=true
+		goto :get_latest_download_link
+	)
+	set downloadurl=%latest_download_output%
 	set delete_download=0
 	set webdriver_dll=true
 	goto :start_download
@@ -1093,7 +1222,7 @@ if not defined webdriver_dll (
 ::selenium by default is a nupkg its a renamed zip file lets make it a zip again so we can extract the dynamic library file we need.
 if not defined webdriver_zip (
 	rename "%downloadpath:"=%" "%filename:"=%.zip"
-	set downloadurl="%root_path:"=%selenium.webdriver.4.6.0.zip"
+	set downloadurl="%root_path:"=%%filename:"=%.zip"
 	set file_name_to_extract=lib\%net_framework%\WebDriver.dll
 	set delete_download=1
 	set webdriver_zip=true
@@ -1101,7 +1230,14 @@ if not defined webdriver_zip (
 )
 ::download selenium support driver dll
 if not defined webdriver_support_dll (
-	set downloadurl=https://globalcdn.nuget.org/packages/selenium.support.4.6.0.nupkg
+	if not defined get_latest_webdriver_support_dll (
+		set grab_latest_url="https://www.nuget.org/packages/Selenium.Support"
+		set grab_latest_html_tag="data-track"
+		set grab_latest_matching_string="*outbound-manual-download"
+		set get_latest_webdriver_support_dll=true
+		goto :get_latest_download_link
+	)
+	set downloadurl=%latest_download_output%
 	set delete_download=0
 	set webdriver_support_dll=true
 	goto :start_download
@@ -1109,7 +1245,7 @@ if not defined webdriver_support_dll (
 ::selenium by default is a nupkg its a renamed zip file lets make it a zip again so we can extract the dynamic library file we need.
 if not defined webdriver_support_zip (
 	rename "%downloadpath:"=%" "%filename:"=%.zip"
-	set downloadurl="%root_path:"=%selenium.support.4.6.0.zip"
+	set downloadurl="%root_path:"=%%filename:"=%.zip"
 	set file_name_to_extract=lib\%net_framework%\WebDriver.Support.dll
 	set delete_download=1
 	set webdriver_support_zip=true
@@ -1117,15 +1253,23 @@ if not defined webdriver_support_zip (
 )
 ::download selenium backdated support driver dll
 if not defined webdriver_backed_support_dll (
-	set downloadurl=https://globalcdn.nuget.org/packages/selenium.webdriverbackedselenium.4.1.0.nupkg
+	if not defined get_latest_webdriver_backedselenium_dll (
+		set grab_latest_url="https://www.nuget.org/packages/Selenium.WebDriverBackedSelenium"
+		set grab_latest_html_tag="data-track"
+		set grab_latest_matching_string="*outbound-manual-download"
+		set get_latest_webdriver_backedselenium_dll=true
+		goto :get_latest_download_link
+	)
+	set downloadurl=%latest_download_output%
 	set delete_download=0
 	set webdriver_backed_support_dll=true
 	goto :start_download
 )
+
 ::selenium by default is a nupkg its a renamed zip file lets make it a zip again so we can extract the dynamic library file we need.
 if not defined webdriver_backed_zip (
 	rename "%downloadpath:"=%" "%filename:"=%.zip"
-	set downloadurl="%root_path:"=%selenium.webdriverbackedselenium.4.1.0.zip"
+	set downloadurl="%root_path:"=%%filename:"=%.zip"
 	set file_name_to_extract=lib\%net_framework%\Selenium.WebDriverBackedSelenium.dll
 	set delete_download=1
 	set webdriver_backed_zip=true
@@ -1246,9 +1390,16 @@ if %opera_selenium% == 1 (
 if %vivaldi_selenium% == 1 (
 	if not exist "%LocalAppData%\Vivaldi\Application\vivaldi.exe" (
 		if not defined vivaldiinstaller_exe (
-			set downloadurl=https://downloads.vivaldi.com/stable/Vivaldi.5.5.2805.44.x64.exe
+			if not defined get_latest_vivaldi_exe (
+				set grab_latest_url="https://vivaldi.com/"
+				set grab_latest_html_tag="class"
+				set grab_latest_matching_string="btn-primary dl-button"
+				set get_latest_tor_exe=true
+				goto :get_latest_download_link
+			)
+			set downloadurl=%latest_download_output%
 			if %PROCESSOR_ARCHITECTURE%==x86 (
-				set downloadurl=https://downloads.vivaldi.com/stable/Vivaldi.5.5.2805.44.exe
+				set downloadurl=%downloadurl:.x64=%
 			)
 			set file_name_to_extract=VivaldiInstaller.exe
 			set delete_download=0
@@ -1266,9 +1417,16 @@ if %vivaldi_selenium% == 1 (
 if %tor_selenium% == 1 (
 	if not exist "%userprofile%\Desktop\Tor Browser\Browser\firefox.exe" (
 		if not defined torinstaller_exe (
-			set downloadurl=https://www.torproject.org/dist/torbrowser/11.5.7/torbrowser-install-win64-11.5.7_en-US.exe
+			if not defined get_latest_tor_exe (
+				set grab_latest_url="https://www.torproject.org/download/"
+				set grab_latest_html_tag="class"
+				set grab_latest_matching_string="btn btn-primary mt-4 downloadLink"
+				set get_latest_tor_exe=true
+				goto :get_latest_download_link
+			)
+			set downloadurl=https://www.torproject.org%latest_download_output%
 			if %PROCESSOR_ARCHITECTURE%==x86 (
-				set downloadurl=https://www.torproject.org/dist/torbrowser/11.5.7/torbrowser-install-11.5.7_en-US.exe
+				set downloadurl=%downloadurl:-win64=%
 			)
 			set file_name_to_extract=TorInstaller.exe
 			set delete_download=0
