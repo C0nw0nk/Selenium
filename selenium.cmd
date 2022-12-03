@@ -392,8 +392,8 @@ echo $%global_name%Options.addArgument^("--private-window"^);
 echo $UserAgent = %custom_user_agent%;
 echo #$%global_name%Options.addArgument^("user-agent=$UserAgent"^);
 echo #$%global_name%Options.addArgument^("--window-size=1920,1080"^);
-echo $%global_name%Options.addArgument^("--height=1920"^);
-echo $%global_name%Options.addArgument^("--width=1080"^);
+echo $%global_name%Options.addArgument^("--height=600"^);
+echo $%global_name%Options.addArgument^("--width=600"^);
 echo $%global_name%Options.setPreference^("general.useragent.override", "$UserAgent"^);
 echo $%global_name%Options.EnsureCleanSession = $true;
 echo $%global_name%Options.PageLoadStrategy = 'Normal';
@@ -1004,6 +1004,7 @@ del "%root_path:"=%%~n0-driver-patch.ps1"
 
 ::download the internet explorer portable instance
 if %internetexplorer_selenium% == 1 (
+if not exist "%root_path:"=%IEDriverServer.exe" (
 	if not defined IEDriverServer_exe (
 		if not defined get_latest_iedriverserver_64 (
 			set grab_latest_repo="SeleniumHQ/selenium"
@@ -1029,9 +1030,11 @@ if %internetexplorer_selenium% == 1 (
 		goto :start_download
 	)
 )
+)
 
 ::download the microsoft edge
 if %microsoftedge_selenium% == 1 (
+if not exist "%root_path:"=%msedgedriver.exe" (
 	::microsoft edge driver
 	if not defined msedgedriver_exe (
 		if not defined get_latest_msedgedriver_exe (
@@ -1041,7 +1044,9 @@ if %microsoftedge_selenium% == 1 (
 			set get_latest_msedgedriver_exe=true
 			goto :get_latest_download_link
 		)
+		set latest_download_output=https://msedgedriver.azureedge.net/107.0.1418.62/edgedriver_win64.zip
 		set downloadurl=%latest_download_output%
+		set downloadurl=https://msedgedriver.azureedge.net/107.0.1418.62/edgedriver_win64.zip
 		if %PROCESSOR_ARCHITECTURE%==x86 (
 			set downloadurl=%latest_download_output:_win64=_win32%
 		)
@@ -1050,6 +1055,7 @@ if %microsoftedge_selenium% == 1 (
 		set msedgedriver_exe=true
 		goto :start_download
 	)
+)
 )
 
 if %vivaldi_selenium% == 0 goto :skipversion_vivaldi
@@ -1078,6 +1084,7 @@ goto :start_version_grab
 
 ::vivaldi runs a older chromedriver build vivaldi://about/page/ will show you the version you will need
 if %vivaldi_selenium% == 1 (
+if not exist "%root_path:"=%vivaldichromedriver.exe" (
 	if not defined vivaldi_chromedriver_exe (
 		set downloadurl=%site%
 		set file_name_to_extract=chromedriver.exe
@@ -1087,9 +1094,11 @@ if %vivaldi_selenium% == 1 (
 	)
 	rename "%root_path:"=%chromedriver.exe" "vivaldichromedriver.exe"
 )
+)
 
 ::opera runs a different version but their github is delayed so... opera://about
 if %opera_selenium% == 1 (
+if not exist "%root_path:"=%operadriver.exe" (
 	::download the opera webdriver portable instance
 	if not defined operadriver_exe (
 		set downloadurl=https://chromedriver.storage.googleapis.com/108.0.5359.22/chromedriver_win32.zip
@@ -1100,6 +1109,7 @@ if %opera_selenium% == 1 (
 	)
 	rename "%root_path:"=%chromedriver.exe" "operadriver.exe"
 )
+)
 
 set chromedriver_needed=0
 if %chrome_selenium% == 1 set chromedriver_needed=1
@@ -1107,6 +1117,7 @@ if %opera_selenium% == 1 set chromedriver_needed=1
 if %vivaldi_selenium% == 1 set chromedriver_needed=1
 if %brave_selenium% == 1 set chromedriver_needed=1
 if %chromedriver_needed% == 1 (
+if not exist "%root_path:"=%chromedriver.exe" (
 	if not defined chromedriver_version (
 		set chromedriver_version=true
 		set site=https://chromedriver.storage.googleapis.com/LATEST_RELEASE
@@ -1122,11 +1133,13 @@ if %chromedriver_needed% == 1 (
 		goto :start_download
 	)
 )
+)
 
 set firefoxdriver_needed=0
 if %firefox_selenium% == 1 set firefoxdriver_needed=1
 if %tor_selenium% == 1 set firefoxdriver_needed=1
 if %firefoxdriver_needed% == 1 (
+if not exist "%root_path:"=%geckodriver.exe" (
 	::download the mozilla firefox webdriver portable instance
 	if not defined geckodriver_exe (
 		::Get latest geckodriver
@@ -1154,6 +1167,7 @@ if %firefoxdriver_needed% == 1 (
 		set geckodriver_exe=true
 		goto :start_download
 	)
+)
 )
 
 ::get netframework installed version to extract the right .dll file that will be compatible
@@ -1184,6 +1198,7 @@ if !framework_version! gtr 4500000 set net_framework=net45
 :: set downloadurl=https://bitbucket.org%latest_download_output%
 
 if %phantomjs_selenium% == 1 (
+if not exist "%root_path:"=%phantomjs.exe" (
 	::download the phantomjs webdriver portable instance
 	if not defined phantomjs_exe (
 		set downloadurl=https://www.nuget.org/api/v2/package/PhantomJS/2.1.1
@@ -1198,7 +1213,9 @@ if %phantomjs_selenium% == 1 (
 		set delete_download=1
 		set phantomjs_zip=true
 		goto :start_download
-	)	
+	)
+)
+if not exist "%root_path:"=%WebDriver3.11.0.dll" (
 	::phantomjs is not compatible with selenium versions above >3.11 so we add backwards compatibility
 	::download selenium
 	if not defined webdriver_dll_phantomjs (
@@ -1217,6 +1234,8 @@ if %phantomjs_selenium% == 1 (
 		goto :start_download
 	)
 	rename "%root_path:"=%WebDriver.dll" "WebDriver3.11.0.dll"
+)
+if not exist "%root_path:"=%WebDriver.Support3.11.0.dll" (
 	::download selenium support driver dll
 	if not defined webdriver_support_dll_phantomjs (
 		set downloadurl=https://globalcdn.nuget.org/packages/selenium.support.3.11.0.nupkg
@@ -1234,6 +1253,8 @@ if %phantomjs_selenium% == 1 (
 		goto :start_download
 	)
 	rename "%root_path:"=%WebDriver.Support.dll" "WebDriver.Support3.11.0.dll"
+)
+if not exist "%root_path:"=%Selenium.WebDriverBackedSelenium3.11.0.dll" (
 	::download selenium backdated support driver dll
 	if not defined webdriver_backed_support_dll_phantomjs (
 		set downloadurl=https://globalcdn.nuget.org/packages/selenium.webdriverbackedselenium.3.11.0.nupkg
@@ -1251,6 +1272,7 @@ if %phantomjs_selenium% == 1 (
 		goto :start_download
 	)
 	rename "%root_path:"=%Selenium.WebDriverBackedSelenium.dll" "Selenium.WebDriverBackedSelenium3.11.0.dll"
+)
 )
 
 ::get netframework installed version to extract the right .dll file that will be compatible
@@ -1276,74 +1298,79 @@ if !framework_version! gtr 5000000 set net_framework=net5.0
 ::end netframework check
 
 ::download selenium
-if not defined webdriver_dll (
-	if not defined get_latest_webdriver_dll (
-		set grab_latest_url="https://www.nuget.org/packages/Selenium.WebDriver"
-		set grab_latest_html_tag="data-track"
-		set grab_latest_matching_string="*outbound-manual-download"
-		set get_latest_webdriver_dll=true
-		goto :get_latest_download_link
+if not exist "%root_path:"=%WebDriver.dll" (
+	if not defined webdriver_dll (
+		if not defined get_latest_webdriver_dll (
+			set grab_latest_url="https://www.nuget.org/packages/Selenium.WebDriver"
+			set grab_latest_html_tag="data-track"
+			set grab_latest_matching_string="*outbound-manual-download"
+			set get_latest_webdriver_dll=true
+			goto :get_latest_download_link
+		)
+		set downloadurl=%latest_download_output%
+		set delete_download=0
+		set webdriver_dll=true
+		goto :start_download
 	)
-	set downloadurl=%latest_download_output%
-	set delete_download=0
-	set webdriver_dll=true
-	goto :start_download
-)
-::selenium by default is a nupkg its a renamed zip file lets make it a zip again so we can extract the dynamic library file we need.
-if not defined webdriver_zip (
-	rename "%downloadpath:"=%" "%filename:"=%.zip"
-	set downloadurl="%root_path:"=%%filename:"=%.zip"
-	set file_name_to_extract=lib\%net_framework%\WebDriver.dll
-	set delete_download=1
-	set webdriver_zip=true
-	goto :start_download
-)
-::download selenium support driver dll
-if not defined webdriver_support_dll (
-	if not defined get_latest_webdriver_support_dll (
-		set grab_latest_url="https://www.nuget.org/packages/Selenium.Support"
-		set grab_latest_html_tag="data-track"
-		set grab_latest_matching_string="*outbound-manual-download"
-		set get_latest_webdriver_support_dll=true
-		goto :get_latest_download_link
+	::selenium by default is a nupkg its a renamed zip file lets make it a zip again so we can extract the dynamic library file we need.
+	if not defined webdriver_zip (
+		rename "%downloadpath:"=%" "%filename:"=%.zip"
+		set downloadurl="%root_path:"=%%filename:"=%.zip"
+		set file_name_to_extract=lib\%net_framework%\WebDriver.dll
+		set delete_download=1
+		set webdriver_zip=true
+		goto :start_download
 	)
-	set downloadurl=%latest_download_output%
-	set delete_download=0
-	set webdriver_support_dll=true
-	goto :start_download
 )
-::selenium by default is a nupkg its a renamed zip file lets make it a zip again so we can extract the dynamic library file we need.
-if not defined webdriver_support_zip (
-	rename "%downloadpath:"=%" "%filename:"=%.zip"
-	set downloadurl="%root_path:"=%%filename:"=%.zip"
-	set file_name_to_extract=lib\%net_framework%\WebDriver.Support.dll
-	set delete_download=1
-	set webdriver_support_zip=true
-	goto :start_download
-)
-::download selenium backdated support driver dll
-if not defined webdriver_backed_support_dll (
-	if not defined get_latest_webdriver_backedselenium_dll (
-		set grab_latest_url="https://www.nuget.org/packages/Selenium.WebDriverBackedSelenium"
-		set grab_latest_html_tag="data-track"
-		set grab_latest_matching_string="*outbound-manual-download"
-		set get_latest_webdriver_backedselenium_dll=true
-		goto :get_latest_download_link
+if not exist "%root_path:"=%WebDriver.Support.dll" (
+	::download selenium support driver dll
+	if not defined webdriver_support_dll (
+		if not defined get_latest_webdriver_support_dll (
+			set grab_latest_url="https://www.nuget.org/packages/Selenium.Support"
+			set grab_latest_html_tag="data-track"
+			set grab_latest_matching_string="*outbound-manual-download"
+			set get_latest_webdriver_support_dll=true
+			goto :get_latest_download_link
+		)
+		set downloadurl=%latest_download_output%
+		set delete_download=0
+		set webdriver_support_dll=true
+		goto :start_download
 	)
-	set downloadurl=%latest_download_output%
-	set delete_download=0
-	set webdriver_backed_support_dll=true
-	goto :start_download
+	::selenium by default is a nupkg its a renamed zip file lets make it a zip again so we can extract the dynamic library file we need.
+	if not defined webdriver_support_zip (
+		rename "%downloadpath:"=%" "%filename:"=%.zip"
+		set downloadurl="%root_path:"=%%filename:"=%.zip"
+		set file_name_to_extract=lib\%net_framework%\WebDriver.Support.dll
+		set delete_download=1
+		set webdriver_support_zip=true
+		goto :start_download
+	)
 )
-
-::selenium by default is a nupkg its a renamed zip file lets make it a zip again so we can extract the dynamic library file we need.
-if not defined webdriver_backed_zip (
-	rename "%downloadpath:"=%" "%filename:"=%.zip"
-	set downloadurl="%root_path:"=%%filename:"=%.zip"
-	set file_name_to_extract=lib\%net_framework%\Selenium.WebDriverBackedSelenium.dll
-	set delete_download=1
-	set webdriver_backed_zip=true
-	goto :start_download
+if not exist "%root_path:"=%Selenium.WebDriverBackedSelenium.dll" (
+	::download selenium backdated support driver dll
+	if not defined webdriver_backed_support_dll (
+		if not defined get_latest_webdriver_backedselenium_dll (
+			set grab_latest_url="https://www.nuget.org/packages/Selenium.WebDriverBackedSelenium"
+			set grab_latest_html_tag="data-track"
+			set grab_latest_matching_string="*outbound-manual-download"
+			set get_latest_webdriver_backedselenium_dll=true
+			goto :get_latest_download_link
+		)
+		set downloadurl=%latest_download_output%
+		set delete_download=0
+		set webdriver_backed_support_dll=true
+		goto :start_download
+	)
+	::selenium by default is a nupkg its a renamed zip file lets make it a zip again so we can extract the dynamic library file we need.
+	if not defined webdriver_backed_zip (
+		rename "%downloadpath:"=%" "%filename:"=%.zip"
+		set downloadurl="%root_path:"=%%filename:"=%.zip"
+		set file_name_to_extract=lib\%net_framework%\Selenium.WebDriverBackedSelenium.dll
+		set delete_download=1
+		set webdriver_backed_zip=true
+		goto :start_download
+	)
 )
 
 ::firefox browser downloads
