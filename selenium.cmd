@@ -145,6 +145,11 @@ set custom_selenium_script=0
 ::Set custom user-agent to use if you do not want to expose your default selenium browser user-agent
 set custom_user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.52"
 
+::Patch chromedriver.exe and msedgedriver.exe changing the identifiable cdc_* string that services like cloudflare and such use to identify selenium
+:: 1 enabled
+:: 0 disabled
+set selenium_driver_patches=1
+
 :: End Edit DO NOT TOUCH ANYTHING BELOW THIS POINT UNLESS YOU KNOW WHAT YOUR DOING!
 
 TITLE C0nw0nk - Selenium - github.com/C0nw0nk/Selenium
@@ -277,10 +282,12 @@ echo $%global_name%Service.HideCommandPromptWindow = $true;
 echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
 echo $%global_name%Options.addArgument^("start-maximized"^);
-echo $%global_name%Options.addArgument^("-inprivate"^);
+echo #$%global_name%Options.addArgument^("-inprivate"^);
+echo $%global_name%Options.addExperimentalOption^("useAutomationExtension", $false^);
+echo $%global_name%Options.AddAdditionalCapability^('w3c', $false^);
 echo $UserAgent = %custom_user_agent%;
 echo $%global_name%Options.addArgument^("user-agent=$UserAgent"^);
-echo $%global_name%Options.addArgument^("--window-size=1920,1080"^);
+echo #$%global_name%Options.addArgument^("--window-size=1920,1080"^);
 echo $%global_name%Options.EnsureCleanSession = $true;
 echo $%global_name%Options.PageLoadStrategy = 'Normal';
 echo $%global_name%Options.LeaveBrowserRunning = $true;
@@ -550,6 +557,8 @@ echo $%global_name%Service.SuppressInitialDiagnosticInformation = $true;
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
 echo $%global_name%Options.BinaryLocation = "%operaversion%\opera.exe";
 echo #$%global_name%Options.BinaryLocation = "%LocalAppData%\Programs\Opera\launcher.exe";
+echo $%global_name%Options.addExperimentalOption^('w3c', $true^);
+echo $%global_name%Options.AddAdditionalCapability^('w3c', $true^);
 echo $%global_name%Options.addArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
 echo #$webData = Invoke-WebRequest -Uri "http://127.0.0.1:9222/json/version";
@@ -939,6 +948,57 @@ del "%root_path:"=%%~n0-latest-download.ps1"
 del "%root_path:"=%%~n0-psoutput.txt"
 del "%root_path:"=%%~n0-psfilenameoutput.txt"
 :skip_latest_download_link
+goto :skip_selenium_driver_patching
+:start_selenium_driver_patching
+:: https://gist.github.com/C0nw0nk/f3fe5541567bf93998d22dca64eeb185
+(
+echo $regexA = 'cdc_.{22}';
+echo $ThisFile = '%root_path:"=%%driver_file_to_patch%';
+echo $new_date="10/10/2000 13:37:02";
+echo if ^( ^(Get-ChildItem $ThisFile^).CreationTime -notlike $new_date ^) {
+echo Write-Output "%driver_file_to_patch% Patching now";
+echo } else {
+echo Write-Output "%driver_file_to_patch% is already patched";
+echo Exit;
+echo }
+echo function Get-RandomCharacters^($length, $characters^) { 
+echo $random = 1..$length ^| ForEach-Object { Get-Random -Maximum $characters.length }
+echo $private:ofs="";
+echo return [String]$characters[$random];
+echo }
+echo $random ^+= Get-RandomCharacters -length 3 -characters 'abcdefghijklmnopqrstuvwxyz';
+echo $random = 'cdc_' ^+ $random;
+echo $randomupper = Get-RandomCharacters -length 1 -characters 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+echo $randomtwo = Get-RandomCharacters -length 12 -characters 'abcdefghijklmnopqrstuvwxyz';
+echo $randomuppertwo = Get-RandomCharacters -length 2 -characters 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+echo $randomthree = Get-RandomCharacters -length 4 -characters 'abcdefghijklmnopqrstuvwxyz';
+echo $output = $random ^+= $randomupper ^+= $randomtwo ^+= $randomuppertwo ^+= $randomthree;
+echo Write-Output "New cdc string is : $output";
+echo Get-ChildItem $ThisFile ^| ForEach-Object {
+echo $c = ^(Get-Content $_.FullName -Raw^);
+echo if ^($c -match $regexA^) {
+echo $existing_cdc = $matches[0];
+echo Write-Output "Existing cdc to be replaced: $existing_cdc";
+echo }
+echo }
+echo $byteEncParam = 
+echo  if ^($IsCoreCLR^) { @{ AsByteStream = $true } } 
+echo  else            { @{ Encoding = 'Byte' } }
+echo $data = Get-Content @byteEncParam -ReadCount 0  $ThisFile
+echo $dataAsHexString = [BitConverter]::ToString^($data^)
+echo $search = $existing_cdc
+echo $replacement = $output
+echo $searchAsHexString = [BitConverter]::ToString^([Text.Encoding]::UTF8.GetBytes^($search^)^)
+echo $replaceAsHexString = [BitConverter]::ToString^([Text.Encoding]::UTF8.GetBytes^($replacement^)^)
+echo $dataAsHexString = $dataAsHexString.Replace^($searchAsHexString, $replaceAsHexString^)
+echo $modifiedData = [byte[]] ^($dataAsHexString -split '-' -replace '^^', '0x'^)
+echo Set-Content @byteEncParam $ThisFile -Value $modifiedData
+echo ^(Get-ChildItem $ThisFile^).CreationTime = $new_date;
+echo ^(Get-ChildItem $ThisFile^).LastWriteTime = $new_date;
+)>"%root_path:"=%%~n0-driver-patch.ps1"
+powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-driver-patch.ps1" "%*" -Verb runAs
+del "%root_path:"=%%~n0-driver-patch.ps1"
+:skip_selenium_driver_patching
 
 ::https://www.selenium.dev/documentation/webdriver/browsers/
 
@@ -1112,6 +1172,16 @@ if !framework_version! gtr 4000000 set net_framework=net40
 if !framework_version! gtr 4500000 set net_framework=net45
 )
 ::end netframework check
+
+:: nulled out grabbing latest version of phantomjs the beta version what is latest is awful lol stick with stable
+:: if not defined get_latest_phantomjs (
+::	set grab_latest_url="https://bitbucket.org/ariya/phantomjs/downloads/"
+::	set grab_latest_html_tag="href"
+::	set grab_latest_matching_string="*windows.zip"
+::	set get_latest_phantomjs=true
+::	goto :get_latest_download_link
+:: )
+:: set downloadurl=https://bitbucket.org%latest_download_output%
 
 if %phantomjs_selenium% == 1 (
 	::download the phantomjs webdriver portable instance
@@ -1434,6 +1504,38 @@ if %tor_selenium% == 1 (
 			goto :start_download
 		) else (
 			call "%root_path:"=%%filename:"=%%fileextension:"=%" /S
+		)
+	)
+)
+
+::Driver patching replacing detectable cdc strings that cloudflare and such services will make a javascript variable call for a known string
+if %selenium_driver_patches% == 1 (
+	if exist "%root_path:"=%chromedriver.exe" (
+		if not defined chromedriver_patching (
+			set driver_file_to_patch=chromedriver.exe
+			set chromedriver_patching=true
+			goto :start_selenium_driver_patching
+		)
+	)
+	if exist "%root_path:"=%msedgedriver.exe" (
+		if not defined msedgedriver_patching (
+			set driver_file_to_patch=msedgedriver.exe
+			set msedgedriver_patching=true
+			goto :start_selenium_driver_patching
+		)
+	)
+	if exist "%root_path:"=%operadriver.exe" (
+		if not defined operadriver_patching (
+			set driver_file_to_patch=operadriver.exe
+			set operadriver_patching=true
+			goto :start_selenium_driver_patching
+		)
+	)
+	if exist "%root_path:"=%vivaldichromedriver.exe" (
+		if not defined vivaldichromedriver_patching (
+			set driver_file_to_patch=vivaldichromedriver.exe
+			set vivaldichromedriver_patching=true
+			goto :start_selenium_driver_patching
 		)
 	)
 )
