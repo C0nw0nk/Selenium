@@ -52,6 +52,8 @@ Internet explorer web browser
 
 PhantomJS phantom javascript web browser
 
+MSEdgeDriver Chromedriver and Operadriver patching making them Undetectable
+
 # Information
 
 If you have any bugs issues or problems just post a Issue request.
