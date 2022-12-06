@@ -938,9 +938,13 @@ goto :skip_latest_download_link
 echo $url = "%grab_latest_url:"=%"
 echo $html_tag = "%grab_latest_html_tag:"=%"
 echo $matching_string = "%grab_latest_matching_string:"=%"
-echo $downloadUri = ^(^(Invoke-WebRequest $url -UseBasicParsing^).Links ^| Where-Object $html_tag -like $matching_string^)[0].href
+echo foreach^($i in %grab_low_range%..%grab_high_range%^){
+echo $downloadUri = ^(^(Invoke-WebRequest $url -UseBasicParsing^).Links ^| Where-Object $html_tag -like $matching_string^)[$i].href
+echo if ^( -not ^([string]::IsNullOrEmpty^($downloadUri^)^) ^) {
 echo Write-Output $downloadUri ^| Out-File "%root_path:"=%%~n0-psoutput.txt"
-echo #Write-Output $downloadUri.Substring^($downloadUri.LastIndexOf^("/"^) ^+ 1^) ^| Out-File "%root_path:"=%%~n0-psfilenameoutput.txt"
+echo break;
+echo }
+echo }
 )>"%root_path:"=%%~n0-latest-download.ps1"
 powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-latest-download.ps1" "%*" -Verb runAs
 for /f "tokens=*" %%a in ('type "%root_path:"=%%~n0-psoutput.txt"') do set "latest_download_output=%%a"
@@ -1040,13 +1044,14 @@ if not exist "%root_path:"=%msedgedriver.exe" (
 		if not defined get_latest_msedgedriver_exe (
 			set grab_latest_url="https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/"
 			set grab_latest_html_tag="aria-label"
-			set grab_latest_matching_string="*x64 stable channel*"
+			set grab_latest_matching_string="*Stable channel version * group win64 link"
+			::grab href occurance between 15 and 20 these are in the stable column if microsoft have missed a windows version the next id in que will be tested
+			set grab_low_range=15
+			set grab_high_range=20
 			set get_latest_msedgedriver_exe=true
 			goto :get_latest_download_link
 		)
-		set latest_download_output=https://msedgedriver.azureedge.net/107.0.1418.62/edgedriver_win64.zip
 		set downloadurl=%latest_download_output%
-		set downloadurl=https://msedgedriver.azureedge.net/107.0.1418.62/edgedriver_win64.zip
 		if %PROCESSOR_ARCHITECTURE%==x86 (
 			set downloadurl=%latest_download_output:_win64=_win32%
 		)
@@ -1192,6 +1197,8 @@ if !framework_version! gtr 4500000 set net_framework=net45
 ::	set grab_latest_url="https://bitbucket.org/ariya/phantomjs/downloads/"
 ::	set grab_latest_html_tag="href"
 ::	set grab_latest_matching_string="*windows.zip"
+::	set grab_low_range=0
+::	set grab_high_range=0
 ::	set get_latest_phantomjs=true
 ::	goto :get_latest_download_link
 :: )
@@ -1304,6 +1311,8 @@ if not exist "%root_path:"=%WebDriver.dll" (
 			set grab_latest_url="https://www.nuget.org/packages/Selenium.WebDriver"
 			set grab_latest_html_tag="data-track"
 			set grab_latest_matching_string="*outbound-manual-download"
+			set grab_low_range=0
+			set grab_high_range=0
 			set get_latest_webdriver_dll=true
 			goto :get_latest_download_link
 		)
@@ -1329,6 +1338,8 @@ if not exist "%root_path:"=%WebDriver.Support.dll" (
 			set grab_latest_url="https://www.nuget.org/packages/Selenium.Support"
 			set grab_latest_html_tag="data-track"
 			set grab_latest_matching_string="*outbound-manual-download"
+			set grab_low_range=0
+			set grab_high_range=0
 			set get_latest_webdriver_support_dll=true
 			goto :get_latest_download_link
 		)
@@ -1354,6 +1365,8 @@ if not exist "%root_path:"=%Selenium.WebDriverBackedSelenium.dll" (
 			set grab_latest_url="https://www.nuget.org/packages/Selenium.WebDriverBackedSelenium"
 			set grab_latest_html_tag="data-track"
 			set grab_latest_matching_string="*outbound-manual-download"
+			set grab_low_range=0
+			set grab_high_range=0
 			set get_latest_webdriver_backedselenium_dll=true
 			goto :get_latest_download_link
 		)
@@ -1491,6 +1504,8 @@ if %vivaldi_selenium% == 1 (
 				set grab_latest_url="https://vivaldi.com/"
 				set grab_latest_html_tag="class"
 				set grab_latest_matching_string="btn-primary dl-button"
+				set grab_low_range=0
+				set grab_high_range=0
 				set get_latest_tor_exe=true
 				goto :get_latest_download_link
 			)
@@ -1518,6 +1533,8 @@ if %tor_selenium% == 1 (
 				set grab_latest_url="https://www.torproject.org/download/"
 				set grab_latest_html_tag="class"
 				set grab_latest_matching_string="btn btn-primary mt-4 downloadLink"
+				set grab_low_range=0
+				set grab_high_range=0
 				set get_latest_tor_exe=true
 				goto :get_latest_download_link
 			)
