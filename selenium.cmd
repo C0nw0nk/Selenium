@@ -939,8 +939,18 @@ echo $url = "%grab_latest_url:"=%"
 echo $html_tag = "%grab_latest_html_tag:"=%"
 echo $matching_string = "%grab_latest_matching_string:"=%"
 echo foreach^($i in %grab_low_range%..%grab_high_range%^){
-echo $downloadUri = ^(^(Invoke-WebRequest $url -UseBasicParsing^).Links ^| Where-Object $html_tag -like $matching_string^)[$i].href
+echo $downloadUri = ^(^(Invoke-WebRequest $url -UseBasicParsing -MaximumRedirection 10^).Links ^| Where-Object $html_tag -like $matching_string^)[$i].href
 echo if ^( -not ^([string]::IsNullOrEmpty^($downloadUri^)^) ^) {
+echo if ^($downloadUri -match "^^/"^) {
+echo $var = [System.Uri]$url
+echo $scheme = $var.Scheme
+echo $domain = $var.Host
+echo $downloadUri = $scheme ^+ "://" ^+ $domain ^+ $downloadUri
+echo }
+echo $downloadURL = $downloadUri
+echo $request = Invoke-WebRequest -Method Head -Uri $downloadURL
+echo $redirectedUri = $request.BaseResponse.ResponseUri.AbsoluteUri
+echo $downloadUri = $redirectedUri
 echo Write-Output $downloadUri ^| Out-File "%root_path:"=%%~n0-psoutput.txt"
 echo break;
 echo }
@@ -1459,9 +1469,9 @@ if %microsoftedge_selenium% == 1 (
 if %brave_selenium% == 1 (
 	if not exist "%LocalAppData%\BraveSoftware\Brave-Browser-Nightly\Application\brave.exe" (
 		if not defined braveinstaller_exe (
-			set downloadurl=https://github.com/brave/brave-browser/releases/latest/download/BraveBrowserStandaloneSilentNightlySetup.exe
+			set downloadurl=https://github.com/brave/brave-browser/releases/download/v1.46.141/BraveBrowserStandaloneSilentSetup.exe
 			if %PROCESSOR_ARCHITECTURE%==x86 (
-				set downloadurl=https://github.com/brave/brave-browser/releases/latest/download/BraveBrowserStandaloneSilentNightlySetup32.exe
+				set downloadurl=https://github.com/brave/brave-browser/releases/download/v1.46.141/BraveBrowserStandaloneSilentSetup32.exe
 			)
 			set file_name_to_extract=BraveInstaller.exe
 			set delete_download=0
