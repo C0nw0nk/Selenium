@@ -89,7 +89,7 @@ set opera_selenium_browser_url=https://www.bbc.co.uk/
 ::Tor selenium browser
 :: 1 enabled
 :: 0 disabled
-set tor_selenium=1
+set tor_selenium=0
 
 ::Tor Bridge to use for encrypted traffic
 ::1 obfs4 - obfs4 is a type of built-in bridge that makes your Tor traffic look random. They are also less likely to be blocked than their predecessors, obfs3 bridges.
@@ -453,7 +453,7 @@ echo $%global_name%Options.EnsureCleanSession = $true;
 echo $%global_name%Options.PageLoadStrategy = 'Normal';
 echo $%global_name%Options.LeaveBrowserRunning = $true;
 echo $%global_name%Options.AcceptInsecureCertificates = $true;
-echo $%global_name%Options.BinaryLocation = "%LocalAppData%\BraveSoftware\Brave-Browser-Nightly\Application\brave.exe";
+echo $%global_name%Options.BinaryLocation = "%LocalAppData%\BraveSoftware\Brave-Browser\Application\brave.exe";
 echo $%global_name%Options.addArgument^(^);
 echo $Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Driver^($%global_name%Service,$%global_name%Options^);
 echo #$Options.executeScript^("Object.defineProperty^(navigator, 'webdriver', ^{set: ^(^) => undefined^}^)"^);
@@ -468,7 +468,7 @@ echo Start-Sleep -s 2;
 echo $pageTitle = $Options.FindElement^([OpenQA.Selenium.By]::tagname^('title'^)^).getAttribute^('innerHTML'^);
 echo $driver_script = $Options.executeScript^("return navigator.webdriver"^);
 echo Write-Output $driver_script;
-echo ##Write-Output $pageTitle;
+echo Write-Output $pageTitle;
 echo $%global_name%Service.Dispose^(^);
 if %close_selenium% == 1 echo $Options.Close^(^);$Options.Quit^(^);
 )>"%root_path:"=%%~n0-%global_name%.ps1"
@@ -703,7 +703,8 @@ echo $workingpath = '%root_path:"=%';
 echo Import-Module '%root_path:"=%WebDriver.dll';
 echo Import-Module '%root_path:"=%WebDriver.Support.dll';
 echo Import-Module '%root_path:"=%Selenium.WebDriverBackedSelenium.dll';
-echo Start-Process '%userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Tor\tor.exe';
+echo #Start-Process '%userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Tor\tor.exe';
+echo #Start-Process '%userprofile%\Desktop\Tor Browser\Browser\firefox.exe';
 echo $%global_name%Options = New-Object OpenQA.Selenium.%global_drver_type%.%global_drver_type%Options;
 echo #https://www.selenium.dev/selenium/docs/api/dotnet/html/T_OpenQA_Selenium_Firefox_FirefoxDriverService.htm
 echo $%global_name%Service = [OpenQA.Selenium.%global_drver_type%.%global_drver_type%DriverService]::CreateDefaultService^('%root_path:"=%','geckodriver.exe'^);
@@ -713,12 +714,12 @@ echo $%global_name%Service.DriverServiceExecutableName = 'geckodriver';
 echo $%global_name%Service.FirefoxBinaryPath = '%userprofile%\Desktop\Tor Browser\Browser\firefox.exe';
 if %headlessbrowser% == 1 echo $%global_name%Options.addArgument^('--headless'^);
 echo #$%global_name%Options.addArgument^("--kiosk"^);
-echo $%global_name%Options.addArgument^("--private-window"^);
+echo #$%global_name%Options.addArgument^("--private-window"^);
 echo $UserAgent = %custom_user_agent%;
 echo #$%global_name%Options.addArgument^("--window-size=1920,1080"^);
 echo #$%global_name%Options.addArgument^("--height=600"^);
 echo #$%global_name%Options.addArgument^("--width=600"^);
-echo $%global_name%Options.addArgument^("--disable-blink-features=AutomationControlled"^);
+echo #$%global_name%Options.addArgument^("--disable-blink-features=AutomationControlled"^);
 echo $%global_name%Options.Profile = "%userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Data\Browser\profile.default";
 echo $%global_name%Options.setPreference^("general.useragent.override", "$UserAgent"^);
 echo $%global_name%Options.setPreference^("webdriver.load.strategy", "unstable"^);
@@ -941,6 +942,8 @@ echo $matching_string = "%grab_latest_matching_string:"=%"
 echo foreach^($i in %grab_low_range%..%grab_high_range%^){
 echo $downloadUri = ^(^(Invoke-WebRequest $url -UseBasicParsing -MaximumRedirection 10^).Links ^| Where-Object $html_tag -like $matching_string^)[$i].href
 echo if ^( -not ^([string]::IsNullOrEmpty^($downloadUri^)^) ^) {
+echo $true_variable=%redirect_true_or_false%;
+echo if ^($true_variable^) {
 echo if ^($downloadUri -match "^^/"^) {
 echo $var = [System.Uri]$url
 echo $scheme = $var.Scheme
@@ -951,6 +954,7 @@ echo $downloadURL = $downloadUri
 echo $request = Invoke-WebRequest -Method Head -Uri $downloadURL
 echo $redirectedUri = $request.BaseResponse.ResponseUri.AbsoluteUri
 echo $downloadUri = $redirectedUri
+echo }
 echo Write-Output $downloadUri ^| Out-File "%root_path:"=%%~n0-psoutput.txt"
 echo break;
 echo }
@@ -1058,6 +1062,7 @@ if not exist "%root_path:"=%msedgedriver.exe" (
 			::grab href occurance between 15 and 20 these are in the stable column if microsoft have missed a windows version the next id in que will be tested
 			set grab_low_range=15
 			set grab_high_range=20
+			set redirect_true_or_false=$false
 			set get_latest_msedgedriver_exe=true
 			goto :get_latest_download_link
 		)
@@ -1323,6 +1328,7 @@ if not exist "%root_path:"=%WebDriver.dll" (
 			set grab_latest_matching_string="*outbound-manual-download"
 			set grab_low_range=0
 			set grab_high_range=0
+			set redirect_true_or_false=$false
 			set get_latest_webdriver_dll=true
 			goto :get_latest_download_link
 		)
@@ -1350,6 +1356,7 @@ if not exist "%root_path:"=%WebDriver.Support.dll" (
 			set grab_latest_matching_string="*outbound-manual-download"
 			set grab_low_range=0
 			set grab_high_range=0
+			set redirect_true_or_false=$false
 			set get_latest_webdriver_support_dll=true
 			goto :get_latest_download_link
 		)
@@ -1377,6 +1384,7 @@ if not exist "%root_path:"=%Selenium.WebDriverBackedSelenium.dll" (
 			set grab_latest_matching_string="*outbound-manual-download"
 			set grab_low_range=0
 			set grab_high_range=0
+			set redirect_true_or_false=$false
 			set get_latest_webdriver_backedselenium_dll=true
 			goto :get_latest_download_link
 		)
@@ -1400,9 +1408,19 @@ if not exist "%root_path:"=%Selenium.WebDriverBackedSelenium.dll" (
 if %firefox_selenium% == 1 (
 	if not exist "%programs_path%\Mozilla Firefox\firefox.exe" (
 		if not defined firefoxinstaller_exe (
-			set downloadurl=https://ftp.mozilla.org/pub/firefox/releases/107.0/win64/en-GB/Firefox%%20Setup%%20107.0.msi
+			if not defined get_latest_firefox_msi (
+				set grab_latest_url="https://www.mozilla.org/en-GB/firefox/all/#product-desktop-release"
+				set grab_latest_html_tag="data-download-version"
+				set grab_latest_matching_string="*win64-msi"
+				set grab_low_range=0
+				set grab_high_range=0
+				set redirect_true_or_false=$true
+				set get_latest_firefox_msi=true
+				goto :get_latest_download_link
+			)
+			set downloadurl=%latest_download_output%
 			if %PROCESSOR_ARCHITECTURE%==x86 (
-				set downloadurl=https://ftp.mozilla.org/pub/firefox/releases/107.0/win32/en-GB/Firefox%%20Setup%%20107.0.msi
+				set downloadurl=%latest_download_output:win64=win32%
 			)
 			set file_name_to_extract=firefox.msi
 			set delete_download=0
@@ -1467,7 +1485,7 @@ if %microsoftedge_selenium% == 1 (
 
 ::brave browser downloads
 if %brave_selenium% == 1 (
-	if not exist "%LocalAppData%\BraveSoftware\Brave-Browser-Nightly\Application\brave.exe" (
+	if not exist "%LocalAppData%\BraveSoftware\Brave-Browser\Application\brave.exe" (
 		if not defined braveinstaller_exe (
 			set downloadurl=https://github.com/brave/brave-browser/releases/download/v1.46.141/BraveBrowserStandaloneSilentSetup.exe
 			if %PROCESSOR_ARCHITECTURE%==x86 (
@@ -1511,17 +1529,18 @@ if %vivaldi_selenium% == 1 (
 	if not exist "%LocalAppData%\Vivaldi\Application\vivaldi.exe" (
 		if not defined vivaldiinstaller_exe (
 			if not defined get_latest_vivaldi_exe (
-				set grab_latest_url="https://vivaldi.com/"
+				set grab_latest_url="https://vivaldi.com/download/"
 				set grab_latest_html_tag="class"
-				set grab_latest_matching_string="btn-primary dl-button"
+				set grab_latest_matching_string="*download-button download-link*"
 				set grab_low_range=0
 				set grab_high_range=0
-				set get_latest_tor_exe=true
+				set redirect_true_or_false=$false
+				set get_latest_vivaldi_exe=true
 				goto :get_latest_download_link
 			)
 			set downloadurl=%latest_download_output%
 			if %PROCESSOR_ARCHITECTURE%==x86 (
-				set downloadurl=%downloadurl:.x64=%
+				set downloadurl=%latest_download_output:.x64=%
 			)
 			set file_name_to_extract=VivaldiInstaller.exe
 			set delete_download=0
@@ -1545,6 +1564,7 @@ if %tor_selenium% == 1 (
 				set grab_latest_matching_string="btn btn-primary mt-4 downloadLink"
 				set grab_low_range=0
 				set grab_high_range=0
+				set redirect_true_or_false=$false
 				set get_latest_tor_exe=true
 				goto :get_latest_download_link
 			)
@@ -1559,6 +1579,9 @@ if %tor_selenium% == 1 (
 		) else (
 			call "%root_path:"=%%filename:"=%%fileextension:"=%" /S
 		)
+	)
+	if not exist "%userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Data\Tor\onion-auth" (
+		mkdir "%userprofile%\Desktop\Tor Browser\Browser\TorBrowser\Data\Tor\onion-auth"
 	)
 )
 
