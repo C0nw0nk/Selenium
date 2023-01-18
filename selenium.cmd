@@ -888,7 +888,9 @@ echo End Sub
 echo If instr^(ZipFile, "zip"^) ^> 0 Then
 echo ExtractByExtension app.NameSpace^(ZipFile^), "exe", ExtractTo
 echo End If
-if %delete_download% == 1 echo fso.DeleteFile ZipFile
+if [%file_name_to_extract%]==[*] echo set FilesInZip = app.NameSpace^(ZipFile^).items
+if [%file_name_to_extract%]==[*] echo app.NameSpace^(ExtractTo^).CopyHere FilesInZip, 4
+if [%delete_download%]==[1] echo fso.DeleteFile ZipFile
 echo Set fso = Nothing
 echo Set objShell = Nothing
 )>"%root_path:"=%%~n0.vbs"
@@ -951,7 +953,7 @@ echo $domain = $var.Host
 echo $downloadUri = $scheme ^+ "://" ^+ $domain ^+ $downloadUri
 echo }
 echo $downloadURL = $downloadUri
-echo $request = Invoke-WebRequest -Method Head -Uri $downloadURL
+echo $request = Invoke-WebRequest -UseBasicParsing -Method Head -Uri $downloadURL
 echo $redirectedUri = $request.BaseResponse.ResponseUri.AbsoluteUri
 echo $downloadUri = $redirectedUri
 echo }
