@@ -1002,6 +1002,15 @@ powershell -ExecutionPolicy Unrestricted -File "%root_path:"=%%~n0-driver-patch.
 del "%root_path:"=%%~n0-driver-patch.ps1"
 :skip_selenium_driver_patching
 
+winget install Microsoft.DotNet.Runtime.7 >nul
+winget install Microsoft.DotNet.Runtime.6 >nul
+winget install Microsoft.DotNet.Runtime.5 >nul
+winget install Microsoft.DotNet.Runtime.3_1 >nul
+winget install Microsoft.DotNet.DesktopRuntime.7 >nul
+winget install Microsoft.DotNet.DesktopRuntime.6 >nul
+winget install Microsoft.DotNet.DesktopRuntime.5 >nul
+winget install Microsoft.DotNet.DesktopRuntime.3_1 >nul
+
 ::https://www.selenium.dev/documentation/webdriver/browsers/
 
 ::download the internet explorer portable instance
