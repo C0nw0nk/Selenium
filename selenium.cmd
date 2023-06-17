@@ -890,7 +890,7 @@ echo if ^(http.status === 200^) WScript.Echo^(http.responseText^);
 echo WScript.Quit^(0^);
 )>"%root_path:"=%%~n0-ip.vbs"
 for /f "tokens=*" %%a in ('
-cscript //nologo //E:JScript ^"%root_path:"=%%~n0-ip.vbs^"^ %site%
+cscript //nologo ^"%root_path:"=%%~n0-ip.vbs^"^ %site%
 ') do set "vbs_output=%%a"
 del "%root_path:"=%%~n0-ip.vbs"
 set site=https://chromedriver.storage.googleapis.com/%vbs_output%/chromedriver_win32.zip
