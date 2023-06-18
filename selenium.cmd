@@ -41,7 +41,7 @@ set internetexplorer_selenium_browser_url=https://www.bbc.co.uk/
 ::microsoft edge selenium browser
 :: 1 enabled
 :: 0 disabled
-set microsoftedge_selenium=1
+set microsoftedge_selenium=0
 
 ::the webpage we want to access to perform a remote automated task on for Edge
 set microsoftedge_selenium_browser_url=https://www.bbc.co.uk/
@@ -148,7 +148,7 @@ set custom_user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537
 ::Patch chromedriver.exe and msedgedriver.exe changing the identifiable cdc_* string that services like cloudflare and such use to identify selenium
 :: 1 enabled
 :: 0 disabled
-set selenium_driver_patches=1
+set selenium_driver_patches=0
 
 :: End Edit DO NOT TOUCH ANYTHING BELOW THIS POINT UNLESS YOU KNOW WHAT YOUR DOING!
 
@@ -1139,7 +1139,7 @@ if not exist "%root_path:"=%chromedriver.exe" (
 	::download the google chrome portable instance
 	if not defined chromedriver_exe (
 		::only 32bit windows available chromedriver ?
-		set downloadurl=%site%
+		set downloadurl=https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_win32.zip
 		set file_name_to_extract=chromedriver.exe
 		set delete_download=1
 		set chromedriver_exe=true
